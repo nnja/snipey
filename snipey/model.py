@@ -2,6 +2,9 @@ from snipey import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
+# Todo: Make meetup_ids required for meetup objects
+# and test
+
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -20,6 +23,7 @@ class Group(db.Model):
     meetup_id = db.Column(db.Integer)
 
     name = db.Column(db.String(200))
+
     events = relationship('Event', backref='group', lazy='dyanmic')
 
 class Subscription(db.Model):
@@ -28,9 +32,12 @@ class Subscription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     user_id = db.Column(db.Integer, ForeignKey('user.id'))
+
     group_id = db.Column(db.Integer, ForeignKey('group.id'))
 
+    group = relationship('Group', backref='subscription')
     snipes = relationship('Snipe', backref='subscription', lazy='dynamic')
+    
 
 class Snipe(db.Model):
     __tablename__ = 'snipe'

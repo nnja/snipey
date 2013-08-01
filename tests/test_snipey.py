@@ -1,5 +1,5 @@
 from snipey import app, db, controller
-from snipey.model import User
+from snipey.model import User, Group, Subscription
 from flask.ext.testing import TestCase
 
 
@@ -62,5 +62,46 @@ class UserTestCase(SnipeyTestCase):
         assert User.query.filter(User.meetup_id == meetup_id).first()
 
 
-class SubscriptionTestCase(SnipeyTestCase):
-    pass
+class SubscribeTestCase(SnipeyTestCase):
+    """
+    Given a user and a group, add a subscription to the database.
+    """
+    def test_subscription(self):
+        user = User(meetup_id='1234')
+        group = Group(meetup_id='5678')
+
+        db.session.add(user)
+        db.session.add(group)
+
+        db.session.commit()
+
+        sub = controller.subscribe_to_group(user, group)
+        fetched_sub = Subscription.query.filter(Subscription.user == user, Subscription.group == group).first()
+
+        assert fetched_sub, sub
+        assert len(user.subscriptions.all()) > 0
+        assert fetched_sub.user_id == sub.user_id
+        assert fetched_sub.group_id == sub.group_id
+
+class UnsubcribeTestCase(SnipeyTestCase):
+    """
+    Given a user and a group, remove a subscription from the database.
+
+    Any scheduled snipes should be removed as well, and if any celery tasks exist for those
+    snipes they should be canceled/recalled.
+    """
+    def test_unsubscribe(self):
+        user = User(meetup_id='1234')
+        group = Group(meetup_id='5678')
+
+        db.session.add(user)
+        db.session.add(group)
+
+        db.session.commit()
+
+        controller.subscribe_to_group(user, group)
+        assert len(user.subscriptions.all()) > 0
+
+        controller.unsubscribe_from_group(user, group)
+        assert len(user.subscriptions.all()) == 0
+        

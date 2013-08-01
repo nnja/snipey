@@ -1,13 +1,13 @@
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.oauth import OAuth
-from flask.ext.bootstrap import Bootstrap
+# from flask.ext.sqlalchemy import SQLAlchemy
+from flask_oauth import OAuth
+from flask_bootstrap import Bootstrap
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
-
 Bootstrap(app)
 
 oauth = OAuth()
