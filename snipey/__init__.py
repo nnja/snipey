@@ -1,5 +1,4 @@
 from flask import Flask
-# from flask.ext.sqlalchemy import SQLAlchemy
 from flask_oauth import OAuth
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -12,11 +11,11 @@ Bootstrap(app)
 
 oauth = OAuth()
 meetup_oauth = oauth.remote_app('meetup',
-                          base_url='https://api.meetup.com/2/',
-                          request_token_url='https://api.meetup.com/oauth/request',
-                          access_token_url='https://api.meetup.com/oauth/access',
-                          authorize_url='http://www.meetup.com/authorize',
-                          consumer_key=app.config['CONSUMER_KEY'],
-                          consumer_secret=app.config['CONSUMER_SECRET'])
+                                base_url='https://api.meetup.com/2/',
+                                request_token_url='https://api.meetup.com/oauth/request',
+                                access_token_url='https://api.meetup.com/oauth/access',
+                                authorize_url='http://www.meetup.com/authorize',
+                                consumer_key=app.config['CONSUMER_KEY'],
+                                consumer_secret=app.config['CONSUMER_SECRET'])
 
 from snipey import view
