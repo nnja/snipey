@@ -1,5 +1,5 @@
 from snipey import app, db, controller
-from snipey.model import User, Group, Subscription
+from snipey.model import User, Group
 from flask.ext.testing import TestCase
 
 
@@ -21,8 +21,8 @@ class SnipeyTestCase(TestCase):
 class UserTestCase(SnipeyTestCase):
     def test_fetch_user(self):
         """
-        1. calling controller.fetch_user without providing a token or secret does not modify
-        the user's existing token or secret
+        1. calling controller.fetch_user without providing a token or
+        secret does not modify the user's existing token or secret
         """
 
         user = User(meetup_id='1234', token='old_token', secret='old_secret')
@@ -35,8 +35,8 @@ class UserTestCase(SnipeyTestCase):
 
     def test_fetch_user_update_token_secret(self):
         """
-        2. calling controller.fetch_user and providing an updated token and secret updates
-        them in the database
+        2. calling controller.fetch_user and providing an updated token and
+        secret updates them in the database
         """
 
         user = User(meetup_id='1234', token='old_token', secret='old_secret')
@@ -49,8 +49,8 @@ class UserTestCase(SnipeyTestCase):
 
     def test_fetch_new_user(self):
         """
-         3. calling controller.fetch_user for a user with a meetup_id that is not in the database
-        returns a newly created user
+        3. calling controller.fetch_user for a user with a meetup_id that
+        is not in the database returns a newly created user
         """
 
         meetup_id = '1243483483'
@@ -75,20 +75,18 @@ class SubscribeTestCase(SnipeyTestCase):
 
         db.session.commit()
 
-        sub = controller.subscribe_to_group(user, group)
-        fetched_sub = Subscription.query.filter(Subscription.user == user, Subscription.group == group).first()
+        controller.subscribe_to_group(user, group)
 
-        assert fetched_sub, sub
-        assert len(user.subscriptions.all()) > 0
-        assert fetched_sub.user_id == sub.user_id
-        assert fetched_sub.group_id == sub.group_id
+        assert len(user.subscriptions) == 1
+        assert user.subscriptions[0] == group
+
 
 class UnsubcribeTestCase(SnipeyTestCase):
     """
     Given a user and a group, remove a subscription from the database.
 
-    Any scheduled snipes should be removed as well, and if any celery tasks exist for those
-    snipes they should be canceled/recalled.
+    Any scheduled snipes should be removed as well, and if any celery
+    tasks exist for those snipes they should be canceled/recalled.
     """
     def test_unsubscribe(self):
         user = User(meetup_id='1234')
@@ -100,8 +98,9 @@ class UnsubcribeTestCase(SnipeyTestCase):
         db.session.commit()
 
         controller.subscribe_to_group(user, group)
-        assert len(user.subscriptions.all()) > 0
+        assert len(user.subscriptions) == 1
 
         controller.unsubscribe_from_group(user, group)
-        assert len(user.subscriptions.all()) == 0
-        
+        assert len(user.subscriptions) == 0
+
+        assert len(Group.query.filter(Group.id==group.id).all())

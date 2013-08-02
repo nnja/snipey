@@ -31,10 +31,8 @@ def subscribe_to_group(user, group):
     """
     Subscribe a user to the provided meetup group.
     """
-    subscription = model.Subscription(user=user, group=group)
-    db.session.add(subscription)
+    user.subscriptions.append(group)
     db.session.commit()
-    return subscription
 
 
 def unsubscribe_from_group(user, group):
@@ -45,10 +43,5 @@ def unsubscribe_from_group(user, group):
     TODO: cancel any associated celery tasks
     TODO: throw an exception if no matching subscription is found
     """
-
-    subscription = model.Subscription.query.filter(
-        model.Subscription.user_id == user.id,
-        model.Subscription.group_id == group.id).first()
-
-    db.session.delete(subscription)
+    user.subscriptions.remove(group)
     db.session.commit()
