@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 # use an enum for snipe status
 
 
-
 subscription_table = db.Table(
     'subscription',
     db.Model.metadata,
@@ -18,7 +17,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meetup_id = db.Column(db.Integer)
 
-    subscriptions = relationship('Group', secondary=subscription_table, backref='subscribers')
+    subscriptions = relationship(
+        'Group', secondary=subscription_table, backref='subscribers')
 
     token = db.Column(db.String(200))
     secret = db.Column(db.String(200))

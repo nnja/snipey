@@ -85,8 +85,12 @@ class UnsubcribeTestCase(SnipeyTestCase):
     """
     Given a user and a group, remove a subscription from the database.
 
+    Make sure that removing the subscription leaves both the User and
+    the Group in the database
+
     Any scheduled snipes should be removed as well, and if any celery
     tasks exist for those snipes they should be canceled/recalled.
+
     """
     def test_unsubscribe(self):
         user = User(meetup_id='1234')
@@ -103,4 +107,5 @@ class UnsubcribeTestCase(SnipeyTestCase):
         controller.unsubscribe_from_group(user, group)
         assert len(user.subscriptions) == 0
 
-        assert len(Group.query.filter(Group.id==group.id).all())
+        assert len(Group.query.filter(Group.id == group.id).all()) == 1
+        assert len(User.query.filter(User.id == user.id).all()) == 1
