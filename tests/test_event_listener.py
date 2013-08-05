@@ -1,23 +1,29 @@
-"""
-The event listener connects to the meetup new event api stream.
-
-For every event that comes in, check to see if we have an active
-subscription in the database.  If we do, add the event to the DB, then
-create a new snipe (task & database row) for every subscribed user.
-Possibly in order to not interrupt the stream listening, this should
-be a celery task as well.
-
-To listen to the event stream:
-r = requests.get(murl, stream=True)
-for line in r.iter_lines(): # do something
-
-To access the json:
+from unittest import TestCase
+import requests
 import json
-j = json.loads(line)
+import event_listener
 
-To access the group via json
-j['groups']
 
-To access the event url:
-j['event_url']
-"""
+class EventStreamTestCase(TestCase):
+    def test_successful_connection(self):
+        assert event_listener.open_event_stream().status_code == 200
+
+    def test_reconnection(self):
+        pass
+
+    def test_json_correctness(self):
+        pass
+
+    def test_subscription_exists_by_group_id(self):
+        pass
+
+    def test_create_snipe_for_one_user(self):
+        pass
+
+    def test_create_snipe_for_mult_users(self):
+        pass
+
+    def test_get_event_id(self):
+        event_url = 'http://www.meetup.com/hackerschool-friends/events/128936142/'
+        event_id = '128936142'
+        assert event_listener.get_event_id(event_url) == event_id
