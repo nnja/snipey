@@ -18,3 +18,4 @@ ACCESS_TOKEN_URL = 'https://api.meetup.com/oauth/access'
 AUTHORIZE_URL = 'http://www.meetup.com/authorize'
 CONSUMER_KEY = os.getenv('CONSUMER_KEY', 'your consumer key')
 CONSUMER_SECRET = os.getenv('CONSUMER_SECRET', 'your consumer secret')
+MEETUP_API_KEY = os.getenv('MEETUP_API_KEY', 'your meetup api key')

@@ -1,99 +1,128 @@
-from snipey.model import Event
+from snipey import db
+from snipey.model import Event, Group, Snipe
 import requests
 import simplejson as json
 from datetime import datetime
+import config
 
 EVENT_STREAM_URL = 'http://stream.meetup.com/2/open_events'
 
 
 def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
-    """Open a stream to the Meetup Open Events API
+    """ Open a stream to the Meetup Open Events API
 
+    Documentation located at:
     http://www.meetup.com/meetup_api/docs/stream/2/open_events/
 
     An optional since_time can be passed in to back process events
     that occured after a certain time.
+
     """
 
     return requests.get(url, stream=True)
 
 
 def reconnect(since_time=datetime.now()):
+    """ Reconnect to the stream API, retrieving data from the provided
+    since_time. since_time defaults to now.
+
+    """
+
     process_stream(open_event_stream(since_time=since_time))
 
 
 def process_stream(request):
-    """
-    Process the incoming request stream.
+    """ Process the incoming request stream.
 
     If the connection is lost, proceed to reconnect, providing
     the mtime of lost connection.
+
     """
 
     for line in request.iter_lines():
-        process_json(json.loads(line))
+        data = json.loads(line)
+
+        meetup_group_id = data['group']['id']
+        event_url = data['event_url']
+
+        parse_snipes(meetup_group_id, event_url)
     else:
         reconnect()
 
 
-def process_json(json):
-    """
-    Process the incoming JSON. If a matching subscription exists in
-    the system for the meetup group_id, create a snipe.
-    """
+def parse_snipes(meetup_group_id, event_url):
+    """ If a matching subscription exists in the system for the meetup
+    group_id, create the event and process snipes for all users.
 
-    group_id = json['group']['id']
-
-    if subscription_exists(group_id):
-        event_id = get_event_id(json[['event_url']])
-        event = create_event(event_id)
-        create_snipes(group_id, event)
-
-
-def subscription_exists(group_id):
-    """
-    Check to see if a subscription exists for a given group id.
     """
 
-    pass
+    group = Group.query.filter(Group.meetup_id == meetup_group_id).first()
 
-
-def create_snipes(group_id, event):
-    """
-    Given a group id and an event, create snipes for all subscribers.
-
-    Dispatch celery tasks for every snipe. If the event has an
-    rsvp_open time, dispatch the task with an eta.
-    """
-
-    pass
+    if group.subscribers:
+        event_id = get_event_id(event_url)
+        event = create_event(group, event_id)
+        create_snipes(event)
 
 
 def get_event_id(event_url):
-    """Parse the event_id from the event_url.
+    """ Parse the event_id from the event_url.
 
     The event_url is in the format:
-    http://www.meetup.com/<group_name>/events/<event_id>
+    http://www.meetup.com/<group_name>/events/<event_id>/
 
     TODO: This is terrible. Take the time to re-implement this with
-    regular expressions
+    a regular expression.
+
     """
 
     return event_url.split('/')[-2]
 
 
-def create_event(event_id):
-    # Make an API call to the meetup api, get the event json
-    json = {}
+def create_event(group, event_id):
+    """ Make a call to the Meetup API to retrieve event information.
 
-    meetup_id = event_id
-    group_id = json['group']['id']
-    name = json['name']
+    Use the data to create a reference event in the database.
 
-    if json['rsvp_rules']:
-        open_time = json['rsvp_rules']['open_time']
+    NOTE: Since the event is being retrieved without authorization
+    information, private groups are not supported.
 
-    return Event(group_id=group_id,
-                 meetup_id=meetup_id,
-                 name=name,
-                 rsvp_open_time=open_time)
+    TODO: Implement Error handing, especially if the event is not found.
+    """
+
+    params = {
+        'fields': 'rsvp_rules',
+        'key': config.MEETUP_API_KEY,
+    }
+
+    url = "%sevent/%s" % (config.BASE_URL, event_id)
+    resp = requests.get(url=url, params=params)
+    data = resp.json()
+
+    name = data['name']
+    open_time = data['rsvp_rules'].get('open_time')
+
+    event = Event(group=group,
+                  meetup_id=event_id,
+                  name=name,
+                  rsvp_open_time=open_time)
+
+    db.session.add(event)
+    db.session.commit()
+
+    return event
+
+
+def create_snipes(event):
+    """ Given a group id and an event, create snipes for all subscribers.
+
+    Dispatch celery tasks for every snipe. If the event has an
+    rsvp_open time, dispatch the task with an eta.
+
+    """
+
+    for user in event.group.subscribers:
+        snipe = Snipe(event_id=event.id, user_id=user.id)
+        # TODO dispatch celery task
+        db.session.add(snipe)
+
+    db.session.commit()

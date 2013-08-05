@@ -1,5 +1,5 @@
 from snipey import db
-from sqlalchemy.orm import relationship
+
 # Todo: Make meetup_ids required for meetup objects
 # use an enum for snipe status
 
@@ -17,8 +17,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meetup_id = db.Column(db.Integer)
 
-    subscriptions = relationship(
+    subscriptions = db.relationship(
         'Group', secondary=subscription_table, backref='subscribers')
+
+    snipes = db.relationship('Snipe', backref='user')
 
     token = db.Column(db.String(200))
     secret = db.Column(db.String(200))
@@ -29,6 +31,7 @@ class Snipe(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # todo, this should be an enum
     status = db.Column(db.String(20))
@@ -41,7 +44,7 @@ class Group(db.Model):
     meetup_id = db.Column(db.Integer)
 
     name = db.Column(db.String(200))
-    events = relationship('Event', backref='group', lazy='dyanmic')
+    events = db.relationship('Event', backref='group', lazy='dyanmic')
 
 
 class Event(db.Model):
