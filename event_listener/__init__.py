@@ -37,6 +37,8 @@ def process_stream(request):
     If the connection is lost, proceed to reconnect, providing
     the mtime of lost connection.
 
+    TODO: This whole unit of work should be done as a celery task.
+
     """
 
     for line in request.iter_lines():

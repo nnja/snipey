@@ -33,6 +33,8 @@ class Snipe(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+    event = db.relationship('Event')
+
     # todo, this should be an enum
     status = db.Column(db.String(20))
 
