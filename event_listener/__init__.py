@@ -1,3 +1,4 @@
+import logging
 from snipey import db
 from snipey.model import Event, Group, Snipe
 import requests
@@ -19,6 +20,9 @@ def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
 
     """
 
+    logging.info('open_event_stream. url:%s, since_time: %s'
+                 % (url, since_time))
+
     return requests.get(url, stream=True)
 
 
@@ -27,7 +31,7 @@ def reconnect(since_time=datetime.now()):
     since_time. since_time defaults to now.
 
     """
-
+    logging.info('reconnect. since_time: %s' % since_time)
     process_stream(open_event_stream(since_time=since_time))
 
 
@@ -40,12 +44,16 @@ def process_stream(request):
     TODO: This whole unit of work should be done as a celery task.
 
     """
+    logging.info('processing stream.')
 
     for line in request.iter_lines():
         data = json.loads(line)
 
         meetup_group_id = data['group']['id']
         event_url = data['event_url']
+
+        logging.info('meetup_group_id: %s, event_url: %s'
+                     % (meetup_group_id, event_url))
 
         parse_snipes(meetup_group_id, event_url)
     else:
@@ -60,7 +68,7 @@ def parse_snipes(meetup_group_id, event_url):
 
     group = Group.query.filter(Group.meetup_id == meetup_group_id).first()
 
-    if group.subscribers:
+    if group and group.subscribers:
         event_id = get_event_id(event_url)
         event = create_event(group, event_id)
         create_snipes(event)
@@ -111,6 +119,8 @@ def create_event(group, event_id):
     db.session.add(event)
     db.session.commit()
 
+    logging.info('created event with id: %n' % event.id)
+
     return event
 
 
@@ -121,9 +131,10 @@ def create_snipes(event):
     rsvp_open time, dispatch the task with an eta.
 
     """
-
+    logging.info('creating snipes')
     for user in event.group.subscribers:
         snipe = Snipe(event_id=event.id, user_id=user.id)
+        logging.info('created snipe with id: %n' % snipe.id)
         # TODO dispatch celery task
         db.session.add(snipe)
 
