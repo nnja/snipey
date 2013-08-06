@@ -49,6 +49,11 @@ def logout():
     return redirect(request.referrer or url_for('index'))
 
 
+@app.route('/')
+def hello_world():
+    return 'hello world'
+
+
 @app.route('/oauth-authorized')
 @meetup_oauth.authorized_handler
 def oauth_authorized(resp):
