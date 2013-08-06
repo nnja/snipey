@@ -110,6 +110,9 @@ def create_event(group, event_id):
 
     name = data['name']
     open_time = data['rsvp_rules'].get('open_time')
+    if open_time:
+        open_time = datetime.utcfromtimestamp(open_time//1000).replace(
+            microsecond=open_time % 1000*1000)
 
     event = Event(group=group,
                   meetup_id=event_id,
@@ -119,7 +122,7 @@ def create_event(group, event_id):
     db.session.add(event)
     db.session.commit()
 
-    logging.info('created event with id: %n' % event.id)
+    logging.info('created event with id: %s' % event.id)
 
     return event
 
@@ -134,7 +137,7 @@ def create_snipes(event):
     logging.info('creating snipes')
     for user in event.group.subscribers:
         snipe = Snipe(event_id=event.id, user_id=user.id)
-        logging.info('created snipe with id: %n' % snipe.id)
+        logging.info('created snipe with id: %s' % snipe.id)
         # TODO dispatch celery task
         db.session.add(snipe)
 

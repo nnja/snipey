@@ -54,10 +54,11 @@ class EventStreamTestCase(SnipeyTestCase):
 
         self.assertEqual(len(user.snipes), 1)
         self.assertEqual(user.snipes[0].event.meetup_id, event_id)
+        self.assertFalse(user.snipes[0].event.rsvp_open_time)
 
     def test_create_snipe_for_mult_users(self):
         user1_id = 48598382
-        user2_id = 48598392
+        user2_id = 11111111
         
         event_id = 124211852
         meetup_group_id = 8230562
@@ -81,3 +82,29 @@ class EventStreamTestCase(SnipeyTestCase):
 
         self.assertEqual(len(user1.snipes), 1)
         self.assertEqual(len(user2.snipes), 1)
+
+    def test_snipe_event_future_open_time(self):
+        user_id = 48598382
+
+        # event id where rsvps open in august 2014.
+        event_id = 133402822
+        meetup_group_id = 4064512
+        event_url = 'http://www.meetup.com/ninjas/events/%s/' % event_id
+
+        user = User(meetup_id=user_id)
+        group = Group(meetup_id=meetup_group_id)
+
+        db.session.add(user)
+        db.session.add(group)
+        
+        controller.subscribe_to_group(user, group)
+
+        event_listener.parse_snipes(meetup_group_id, event_url)
+
+        self.assertEqual(len(user.snipes), 1)
+        self.assertEqual(user.snipes[0].event.meetup_id, event_id)
+
+        rsvp_open_time = user.snipes[0].event.rsvp_open_time
+        print rsvp_open_time
+        self.assertTrue(rsvp_open_time)
+        self.assertEqual(rsvp_open_time.year, 2014)
