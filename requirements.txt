@@ -13,6 +13,8 @@ anyjson==0.3.3
 billiard==2.7.3.31
 bpython==0.12
 celery==3.0.21
+gevent==0.13.8
+greenlet==0.4.1
 httplib2==0.8
 ipython==0.13.2
 itsdangerous==0.22
