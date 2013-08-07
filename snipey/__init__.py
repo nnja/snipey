@@ -1,12 +1,16 @@
+import os
+
 from flask import Flask
 from flask_oauth import OAuth
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
+
 import config
 
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.secret_key = os.urandom(24)
 
 db = SQLAlchemy(app)
 Bootstrap(app)

@@ -56,8 +56,6 @@ def process_stream(request):
                      % (meetup_group_id, event_url))
 
         parse_snipes(meetup_group_id, event_url)
-    else:
-        reconnect()
 
 
 def parse_snipes(meetup_group_id, event_url):
