@@ -6,8 +6,8 @@ import threading
 
 def stream_task():
     event_listener.process_stream(event_listener.open_event_stream())
-    while True:
-        event_listener.reconnect()
+    # while True:
+    #     event_listener.reconnect()
 
 
 if __name__ == '__main__':
@@ -17,6 +17,4 @@ if __name__ == '__main__':
     stream_thread.daemon = True
     stream_thread.start()
 
-    app.run(debug=True)
-
-
+    app.run()

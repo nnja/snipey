@@ -15,4 +15,9 @@ Test Celery Tasks
 2. Test RSVP Later:
     Given a snipe ID and a RSVP eta, RSVP to the event at a later date.
 
+
+Test group id: (pirates)
+Test user: me
+Test Event 1 (RSVP Open Now): 133591802
+Test Event 2 (RSVP Open Later): 133591952
 """

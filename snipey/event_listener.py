@@ -10,10 +10,6 @@ import config
 EVENT_STREAM_URL = 'http://stream.meetup.com/2/open_events'
 
 
-def rsvp_now():
-    tasks.rsvp.delay(48598382, 133591952, '2b2c40beabee27c1e0641213d6aab32a')
-
-
 def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
     """ Open a stream to the Meetup Open Events API
 
@@ -110,6 +106,10 @@ def create_event(group, event_id):
     resp = requests.get(url=url, params=params)
     data = resp.json()
 
+    logging.info('creating an event for group %s and event_id: %s and url:%s'
+                 % (group.id, event_id, url))
+    logging.info('data is: %s' % data)
+
     name = data['name']
     open_time = data['rsvp_rules'].get('open_time')
     if open_time:
@@ -139,8 +139,15 @@ def create_snipes(event):
     logging.info('creating snipes')
     for user in event.group.subscribers:
         snipe = Snipe(event_id=event.id, user_id=user.id)
-        logging.info('created snipe with id: %s' % snipe.id)
-        # TODO dispatch celery task
         db.session.add(snipe)
+        db.session.commit()
 
-    db.session.commit()
+        logging.info('created snipe with id: %s' % snipe.id)
+        if snipe.event.rsvp_open_time:
+            logging.info('scheduling celery task for snipe.id %s and eta %s'
+                         % (snipe.id, snipe.event.rsvp_open_time))
+            pass
+        else:
+            logging.info('scheduling celery task for snipe.id %s immediately'
+                         % snipe.id)
+            tasks.rsvp.delay(snipe.id, event.meetup_id, user.token)

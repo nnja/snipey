@@ -1,5 +1,6 @@
-from flask import g, session, request, url_for, flash, redirect
+from flask import g, session, request, url_for, flash, redirect, render_template
 from snipey import app, meetup_oauth, model, controller
+
 
 
 @app.before_request
@@ -9,11 +10,11 @@ def before_request():
     """
     g.user = None
     if 'user_id' in session:
-        g.user = model.User.query.get(session['user_id']).first()
+        g.user = model.User.query.filter_by(id=session['user_id']).first()
 
 
 @meetup_oauth.tokengetter
-def get_meetup_token():
+def get_meetup_token(token=None):
     """
     This is used by the API to look for the auth token and secret it
     should use for API calls.  During the authorization handshake a
@@ -22,11 +23,22 @@ def get_meetup_token():
     store this in the database, consider putting it into the session
     instead.
     """
-    oauth_secret = request.args.get('secret', '')
-    oauth_token = request.args.get('token', '')
+    # oauth_secret = request.args.get('secret', '')
+    # oauth_token = request.args.get('token', '')
 
-    if oauth_secret and oauth_token:
-        return oauth_token, oauth_secret
+    # if oauth_secret and oauth_token:
+    #     return oauth_token, oauth_secret
+
+    print 'token is %s' % token
+    if token is not None:
+        print '\n\ni had token@!\n\n'
+        user = model.User.query.filter_by(token=token).first()
+        return token, user.secret
+
+    if 'user_id' in session:
+        print '\n\nuser_id in session %s \n\n' % session['user_id']
+        user = model.User.query.filter_by(id=session['user_id']).first()
+        return user.token, user.secret
 
     if g.user:
         return g.user.token, g.user.secret
@@ -52,11 +64,6 @@ def logout():
     return redirect(request.referrer or url_for('index'))
 
 
-@app.route('/')
-def hello_world():
-    return 'hello world'
-
-
 @app.route('/oauth-authorized')
 @meetup_oauth.authorized_handler
 def oauth_authorized(resp):
@@ -74,3 +81,29 @@ def oauth_authorized(resp):
     flash('You were signed in', 'alert-info')
 
     return redirect(url_for('snipe'))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.route('/')
+def index():
+    mup_user = None
+    if g.user is not None:
+        resp = meetup_oauth.post('member/self', data={
+            'page': '20'
+        })
+        if resp.status == 200:
+            mup_user = resp.data
+        else:
+            flash('Something went wrong', 'alert-error')
+    return render_template('index.html', mup_user=mup_user)
+
+
+@app.route('/snipe')
+def snipe():
+ #   import tasks
+#    tasks.rsvp.delay(48598382, 133591952, g.user.token) 
+    return 'hello'

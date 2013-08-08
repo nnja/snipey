@@ -1,7 +1,24 @@
 from snipey import db
-
 # Todo: Make meetup_ids required for meetup objects
 # use an enum for snipe status
+
+
+class ReprMixin(object):
+    """Hooks into SQLAlchemy's magic to make :meth:`__repr__`s.
+    Source from: http://innuendopoly.org/arch/sqlalchemy-init-repr
+    """
+    def __repr__(self):
+        def reprs():
+            for col in self.__table__.c:
+                yield col.name, repr(getattr(self, col.name))
+
+        def format(seq):
+            for key, value in seq:
+                yield '%s=%s' % (key, value)
+
+        args = '(%s)' % ', '.join(format(reprs()))
+        classy = type(self).__name__
+        return classy + args
 
 
 subscription_table = db.Table(
@@ -11,7 +28,7 @@ subscription_table = db.Table(
     db.Column('group_id', db.Integer, db.ForeignKey('group.id')))
 
 
-class User(db.Model):
+class User(ReprMixin, db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +43,11 @@ class User(db.Model):
     secret = db.Column(db.String(200))
 
 
-class Snipe(db.Model):
+class Snipe(ReprMixin, db.Model):
+    CREATED = 1
+    SUCCEEDED = 2
+    FAILED = 3
+
     __tablename__ = 'snipe'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -36,10 +57,10 @@ class Snipe(db.Model):
     event = db.relationship('Event')
 
     # todo, this should be an enum
-    status = db.Column(db.String(20))
+    status = db.Column(db.String(20), default=CREATED)
 
 
-class Group(db.Model):
+class Group(ReprMixin, db.Model):
     __tablename__ = 'group'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -49,7 +70,7 @@ class Group(db.Model):
     events = db.relationship('Event', backref='group', lazy='dyanmic')
 
 
-class Event(db.Model):
+class Event(ReprMixin, db.Model):
     __tablename__ = 'event'
 
     id = db.Column(db.Integer, primary_key=True)
