@@ -1,4 +1,5 @@
 import logging
+from snipey import tasks
 from snipey import db
 from snipey.model import Event, Group, Snipe
 import requests
@@ -7,6 +8,10 @@ from datetime import datetime
 import config
 
 EVENT_STREAM_URL = 'http://stream.meetup.com/2/open_events'
+
+
+def rsvp_now():
+    tasks.rsvp.delay(48598382, 133591952, '2b2c40beabee27c1e0641213d6aab32a')
 
 
 def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
@@ -19,7 +24,6 @@ def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
     that occured after a certain time.
 
     """
-
     logging.info('open_event_stream. url:%s, since_time: %s'
                  % (url, since_time))
 
@@ -52,8 +56,8 @@ def process_stream(request):
         meetup_group_id = data['group']['id']
         event_url = data['event_url']
 
-        logging.info('meetup_group_id: %s, event_url: %s'
-                     % (meetup_group_id, event_url))
+        # logging.info('meetup_group_id: %s, event_url: %s'
+        #              % (meetup_group_id, event_url))
 
         parse_snipes(meetup_group_id, event_url)
 

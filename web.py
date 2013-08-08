@@ -1,7 +1,8 @@
 from snipey import app
-import event_listener
+from snipey import event_listener
 import logging
 import threading
+
 
 def stream_task():
     event_listener.process_stream(event_listener.open_event_stream())
@@ -10,10 +11,12 @@ def stream_task():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     stream_thread = threading.Thread(target=stream_task)
     stream_thread.daemon = True
     stream_thread.start()
 
-    app.run()
+    app.run(debug=True)
+
+
