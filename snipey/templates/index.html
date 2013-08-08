@@ -1,0 +1,44 @@
+{% extends "bootstrap_responsive.html" %}
+{% block body_content %}
+    {% include "navbar.html" %}
+
+    <div class="container">
+        <div class="hero-unit offset1 span7">
+            <h1>Missed out?</h1>
+            <br>
+
+            <p>Meetups can be popular, and it's frustrating getting left behind. If you're sick of being left in the
+                dust,
+                it's time to play smarter not harder.
+                <br>
+
+                {% if g.user %}
+                    {% if mup_user %}
+                        <h3>You're logged in as:</h3>
+                        {{ mup_user.name }}
+                        {{ mup_user.id }}
+                    {% endif %}
+                {% else %}
+                    <p>
+                        Sign in to let rsvp snipe keep track of Meetups for you, and RSVP you at just the
+                        right time.
+                    </p>
+                    <br>
+                    <p><a href="{{ url_for('login') }}" class="btn btn-xlarge btn-danger"><i
+                            class="icon-user icon-white"></i> Sign
+                        in with Meetup &raquo;</a></p>
+                {% endif %}
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            &nbsp;&nbsp;{{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+{% endblock %}

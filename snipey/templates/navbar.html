@@ -1,0 +1,39 @@
+   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-extensions.css') }}">
+    <div class="navbar navbar-static-top navbar-inverse nav">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand" href="/"><img width="24" height="24"
+                                               src="{{ url_for('static', filename='img/Archery-Target-icon-blue.png') }}">
+                    rsvp sniper</a>
+
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li class="divider-vertical"></li>
+                        <li class="active"><a href="#"><i class="icon-home icon-white"></i> Home</a></li>
+                        <li class="divider-vertical"></li>
+                        <li><a href="#"><i class="icon-info-sign icon-white"></i> About</a></li>
+                    </ul>
+                    {% if g.user %}
+                        <div class="pull-left">
+                            <ul class="nav pull-left">
+                                <li class="dropdown"></i><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                                        class="icon-user icon-white"></i>
+                                    Welcome, {{ g.user.member_id }} <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/snipe"><i class="icon-cog"></i> Manage Snipes</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="{{ url_for('logout') }}"><i class="icon-off"></i> Logout</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>

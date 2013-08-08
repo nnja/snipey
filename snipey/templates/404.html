@@ -1,0 +1,21 @@
+{% extends "bootstrap_responsive.html" %}
+
+<style>
+  .center {text-align: center; margin-left: auto; margin-right: auto; margin-bottom: auto; margin-top: auto;}
+</style>
+<title>Error 404</title>
+{% block body_content %}
+  <div class="hero-unit center">
+    <h1>Page Not Found <small><font face="Tahoma" color="red">Error 404</font></small></h1>
+    <br />
+    <p>The page you requested could not be found.</p>
+        <p>Use your browsers <b>Back</b> button to navigate to the page that you previously came from.</p>
+    <p><b>Or you could just press this neat little button:</b></p>
+    <a href="{{ url_for('index') }}" class="btn btn-large btn-info"><i class="icon-home icon-white"></i> Take Me Home</a>
+
+  {% for message in get_flashed_messages() %}
+  {{ message }}
+{% endfor %}
+  </div>
+  <br />
+{% endblock %}

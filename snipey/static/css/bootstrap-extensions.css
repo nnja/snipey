@@ -1,0 +1,26 @@
+/**
+ * Extra large button extensions. Extends `.btn`.
+ */
+.btn-xlarge {
+    padding: 18px 28px;
+    font-size: 22px;
+    line-height: normal;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+
+table {
+    font-size: 14px;
+}
+
+table th {
+    font-size: 14px;
+    background: rgba(142, 255, 243, 0.40) none;
+}
+
+label {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 30px;
+}
