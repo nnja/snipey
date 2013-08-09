@@ -41,7 +41,7 @@ def rsvp(snipe_id, meetup_event_id, token):
     """
     current_app.logger.info(
         'attempting to rsvp snipe.id: %s for event_id:%s, token: %s'
-        % (snipe_id, event_id, token))
+        % (snipe_id, meetup_event_id, token))
 
     snipe = Snipe.query.filter(Snipe.id == snipe_id).first()
     if not snipe:
@@ -49,7 +49,7 @@ def rsvp(snipe_id, meetup_event_id, token):
         return
 
     resp = celery_oauth.post('rsvp', token=token, data={
-        'event_id': event_id,
+        'event_id': meetup_event_id,
         'rsvp': 'yes'
     })
 
