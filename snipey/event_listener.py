@@ -146,7 +146,10 @@ def create_snipes(event):
         if snipe.event.rsvp_open_time:
             logging.info('scheduling celery task for snipe.id %s and eta %s'
                          % (snipe.id, snipe.event.rsvp_open_time))
-            pass
+            tasks.rsvp.delay(snipe.id,
+                             event.meetup_id,
+                             user.token,
+                             eta=snipe.event.rsvp_open_time)
         else:
             logging.info('scheduling celery task for snipe.id %s immediately'
                          % snipe.id)

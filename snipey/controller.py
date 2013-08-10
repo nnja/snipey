@@ -1,7 +1,7 @@
 from snipey import db, model
 
 
-def fetch_user(meetup_id, token_secret=()):
+def fetch_user(meetup_id, token_secret=(), name=None):
     """
     Fetch or create a user with the specified meetup_id from the database.
 
@@ -14,6 +14,7 @@ def fetch_user(meetup_id, token_secret=()):
         db.session.add(user)
 
     update_user_credentials(user, token_secret)
+    user.name = name
     db.session.commit()
 
     return user

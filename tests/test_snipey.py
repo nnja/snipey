@@ -43,7 +43,8 @@ class UserTestCase(SnipeyTestCase):
         db.session.add(user)
         db.session.commit()
 
-        fetched_user = controller.fetch_user(meetup_id='1234', token_secret=('new_token', 'new_secret'))
+        fetched_user = controller.fetch_user(
+            meetup_id='1234', token_secret=('new_token', 'new_secret'))
         assert user.id == fetched_user.id
         assert user.token, user.secret == ('new_token', 'new_secret')
 
@@ -56,7 +57,8 @@ class UserTestCase(SnipeyTestCase):
         meetup_id = '1243483483'
         assert not User.query.filter(User.meetup_id == meetup_id).first()
 
-        user = controller.fetch_user(meetup_id=meetup_id, token_secret=('new_token', 'new_secret'))
+        user = controller.fetch_user(
+            meetup_id=meetup_id, token_secret=('new_token', 'new_secret'))
         assert user
 
         assert User.query.filter(User.meetup_id == meetup_id).first()

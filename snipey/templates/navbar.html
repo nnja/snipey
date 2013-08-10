@@ -9,8 +9,7 @@
                 </a>
                 <a class="brand" href="/"><img width="24" height="24"
                                                src="{{ url_for('static', filename='img/Archery-Target-icon-blue.png') }}">
-                    rsvp sniper</a>
-
+                    snipey</a>
                 <div class="nav-collapse collapse">
                     <ul class="nav">
                         <li class="divider-vertical"></li>
@@ -23,9 +22,9 @@
                             <ul class="nav pull-left">
                                 <li class="dropdown"></i><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i
                                         class="icon-user icon-white"></i>
-                                    Welcome, {{ g.user.member_id }} <b class="caret"></b></a>
+                                    Welcome, {{ g.user.name }} <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="/snipe"><i class="icon-cog"></i> Manage Snipes</a></li>
+                                        <li><a href="/snipe"><i class="icon-cog"></i> Manage Subscriptions</a></li>
                                         <li class="divider"></li>
                                         <li><a href="{{ url_for('logout') }}"><i class="icon-off"></i> Logout</a></li>
                                     </ul>

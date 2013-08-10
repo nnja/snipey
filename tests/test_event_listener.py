@@ -6,6 +6,8 @@ import event_listener
 
 
 class EventStreamTestCase(SnipeyTestCase):
+    """TODO: Mock requests & responses so unit tests can be run offline
+    """
     def test_successful_connection(self):
         self.assertEqual(
             event_listener.open_event_stream().status_code,

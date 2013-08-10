@@ -34,6 +34,7 @@ class User(ReprMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meetup_id = db.Column(db.Integer)
 
+    name = db.Column(db.String(200))
     subscriptions = db.relationship(
         'Group', secondary=subscription_table, backref='subscribers')
 
@@ -44,7 +45,7 @@ class User(ReprMixin, db.Model):
 
 
 class Snipe(ReprMixin, db.Model):
-    CREATED = 1
+    SCHEDULED = 1
     SUCCEEDED = 2
     FAILED = 3
 
@@ -56,8 +57,8 @@ class Snipe(ReprMixin, db.Model):
 
     event = db.relationship('Event')
 
-    # todo, this should be an enum
-    status = db.Column(db.String(20), default=CREATED)
+    # TODO: look at sqlalchemy support for enums
+    status = db.Column(db.String(20), default=SCHEDULED)
 
 
 class Group(ReprMixin, db.Model):

@@ -11,8 +11,6 @@ def before_request():
     g.user = None
     if 'user_id' in session:
         g.user = model.User.query.filter_by(id=session['user_id']).first()
-
-
 @meetup_oauth.tokengetter
 def get_meetup_token(token=None):
     """
@@ -72,10 +70,11 @@ def oauth_authorized(resp):
         return redirect(url_for('index'))
 
     meetup_id = resp['member_id']
+    name = resp['name']
     oauth_token = resp['oauth_token']
     oauth_secret = resp['oauth_token_secret']
 
-    user = controller.fetch_user(meetup_id, (oauth_token, oauth_secret))
+    user = controller.fetch_user(meetup_id, (oauth_token, oauth_secret), name)
 
     session['user_id'] = user.id
     flash('You were signed in', 'alert-info')

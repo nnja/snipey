@@ -7,16 +7,15 @@
             <h1>Missed out?</h1>
             <br>
 
-            <p>Meetups can be popular, and it's frustrating getting left behind. If you're sick of being left in the
-                dust,
-                it's time to play smarter not harder.
+            <p>Meetups can be popular, and it's frustrating getting left behind.
+	       Sick of being left in the dust? Play smarter not harder.
                 <br>
 
                 {% if g.user %}
                     {% if mup_user %}
                         <h3>You're logged in as:</h3>
                         {{ mup_user.name }}
-                        {{ mup_user.id }}
+                        {{ mup_user.meetup_id }}
                     {% endif %}
                 {% else %}
                     <p>
