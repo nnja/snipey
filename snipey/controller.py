@@ -28,14 +28,6 @@ def update_user_credentials(user, token_secret):
         user.token, user.secret = token_secret
 
 
-def subscribe_to_group(user, group):
-    """
-    Subscribe a user to the provided meetup group.
-    """
-    user.subscriptions.append(group)
-    db.session.commit()
-
-
 def unsubscribe_from_group(user, group):
     """
     Unsubscribe a user from a given meetup group.

@@ -44,12 +44,12 @@ class EventStreamTestCase(SnipeyTestCase):
 
         user = User(meetup_id=user_id)
         group = Group(meetup_id=meetup_group_id)
-
+        user.subscriptions.append(group)
+        
         db.session.add(user)
         db.session.add(group)
+        db.session.commit()
         
-        controller.subscribe_to_group(user, group)
-
         self.assertEqual(len(user.subscriptions), 1)
 
         event_listener.parse_snipes(meetup_group_id, event_url)
@@ -74,9 +74,11 @@ class EventStreamTestCase(SnipeyTestCase):
         db.session.add(user2)
         db.session.add(group)
 
-        controller.subscribe_to_group(user1, group)
-        controller.subscribe_to_group(user2, group)
+        user1.subscriptions.append(group)
+        user2.subscriptions.append(group)
 
+        db.session.commit()
+        
         self.assertEqual(len(user1.subscriptions), 1)
         self.assertEqual(len(user2.subscriptions), 1)
 
@@ -98,9 +100,9 @@ class EventStreamTestCase(SnipeyTestCase):
 
         db.session.add(user)
         db.session.add(group)
-        
-        controller.subscribe_to_group(user, group)
+        user.subscriptions.append(group)
 
+        db.session.commit()
         event_listener.parse_snipes(meetup_group_id, event_url)
 
         self.assertEqual(len(user.snipes), 1)

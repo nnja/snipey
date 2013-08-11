@@ -71,13 +71,12 @@ class SubscribeTestCase(SnipeyTestCase):
     def test_subscription(self):
         user = User(meetup_id='1234')
         group = Group(meetup_id='5678')
+        user.subscriptions.append(group)
 
         db.session.add(user)
         db.session.add(group)
 
         db.session.commit()
-
-        controller.subscribe_to_group(user, group)
 
         assert len(user.subscriptions) == 1
         assert user.subscriptions[0] == group
@@ -97,13 +96,13 @@ class UnsubcribeTestCase(SnipeyTestCase):
     def test_unsubscribe(self):
         user = User(meetup_id='1234')
         group = Group(meetup_id='5678')
+        user.subscriptions.append(group)
 
         db.session.add(user)
         db.session.add(group)
 
         db.session.commit()
 
-        controller.subscribe_to_group(user, group)
         assert len(user.subscriptions) == 1
 
         controller.unsubscribe_from_group(user, group)
