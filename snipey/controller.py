@@ -1,4 +1,5 @@
-from snipey import db, model
+from snipey import db
+from snipey.model import User, Group
 
 
 def fetch_user(meetup_id, token_secret=(), name=None):
@@ -7,14 +8,14 @@ def fetch_user(meetup_id, token_secret=(), name=None):
 
     The meetup_id must be provided.
     """
-    user = model.User.query.filter(model.User.meetup_id == meetup_id).first()
+    user = User.query.filter(User.meetup_id == meetup_id).first()
 
     if user is None:
-        user = model.User(meetup_id=meetup_id)
+        user = User(meetup_id=meetup_id)
         db.session.add(user)
 
     update_user_credentials(user, token_secret)
-    user.name = name
+    #user.name = name
     db.session.commit()
 
     return user
@@ -38,3 +39,21 @@ def unsubscribe_from_group(user, group):
     """
     user.subscriptions.remove(group)
     db.session.commit()
+
+
+def subscribe_to_meetup_groups(user, meetup_group_ids):
+    """
+    Subscribe a user to the given meetup groups based on meetup id.
+
+    If a Group with the provided meetup group id doesn't exist, create
+    it.
+    """
+
+    for m_id in meetup_group_ids:
+        group = Group.query.filter_by(meetup_id=m_id).first()
+
+        if not group:
+            group = create_group(m_id)
+            db.session.add(group)
+
+        user.subscriptions.append(group)
