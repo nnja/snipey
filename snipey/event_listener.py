@@ -1,7 +1,7 @@
 import logging
 from snipey import tasks
 from snipey import db
-from snipey.model import Event, Group, Snipe
+from snipey.model import Event, Group, Snipe, Stream
 import requests
 import simplejson as json
 from datetime import datetime
@@ -10,7 +10,16 @@ import config
 EVENT_STREAM_URL = 'http://stream.meetup.com/2/open_events'
 
 
-def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
+def connect(since_time):
+    """ Connect to the stream API, retrieving data from the provided
+    since_time.
+
+    """
+    logging.info('connect to meetup rsvp. since_time: %s' % since_time)
+    process_stream(open_event_stream(since_time=since_time))
+
+
+def open_event_stream(url=EVENT_STREAM_URL, since_time=None):
     """ Open a stream to the Meetup Open Events API
 
     Documentation located at:
@@ -23,16 +32,11 @@ def open_event_stream(url=EVENT_STREAM_URL, since_time=''):
     logging.info('open_event_stream. url:%s, since_time: %s'
                  % (url, since_time))
 
-    return requests.get(url, stream=True)
+    params = {}
+    if since_time is not None:
+        params['since_mtime'] = since_time
 
-
-def reconnect(since_time=datetime.now()):
-    """ Reconnect to the stream API, retrieving data from the provided
-    since_time. since_time defaults to now.
-
-    """
-    logging.info('reconnect. since_time: %s' % since_time)
-    process_stream(open_event_stream(since_time=since_time))
+    return requests.get(url, params=params, stream=True)
 
 
 def process_stream(request):
@@ -52,10 +56,22 @@ def process_stream(request):
         meetup_group_id = data['group']['id']
         event_url = data['event_url']
 
-        # logging.info('meetup_group_id: %s, event_url: %s'
-        #              % (meetup_group_id, event_url))
+        logging.info('meetup_group_id: %s, event_url: %s mtime: %s'
+                     % (meetup_group_id, event_url, data['mtime']))
 
         parse_snipes(meetup_group_id, event_url)
+
+        track_mtime(data['mtime'])
+
+
+def track_mtime(mtime):
+    """ Keep track of the last event's mtime, which can be used to
+    resume a dropped connection.
+
+    """
+    stream = Stream.current()
+    stream.since_mtime_milli = mtime
+    db.session.commit()
 
 
 def parse_snipes(meetup_group_id, event_url):
@@ -78,12 +94,37 @@ def get_event_id(event_url):
     The event_url is in the format:
     http://www.meetup.com/<group_name>/events/<event_id>/
 
-    TODO: This is terrible. Take the time to re-implement this with
-    a regular expression.
-
+    The event id may be numeric or alphanumeric.
     """
 
     return event_url.split('/')[-2]
+
+
+def create_snipes(event):
+    """ Given a group id and an event, create snipes for all subscribers.
+
+    Dispatch celery tasks for every snipe. If the event has an
+    rsvp_open time, dispatch the task with an eta.
+
+    """
+    logging.info('creating snipes')
+    for user in event.group.subscribers:
+        snipe = Snipe(event_id=event.id, user_id=user.id)
+        db.session.add(snipe)
+        db.session.commit()
+
+        logging.info('created snipe with id: %s' % snipe.id)
+        if snipe.event.rsvp_open_time:
+            logging.info('scheduling celery task for snipe.id %s and eta %s'
+                         % (snipe.id, snipe.event.rsvp_open_time))
+            tasks.rsvp.delay(snipe.id,
+                             event.meetup_id,
+                             user.token,
+                             eta=snipe.event.rsvp_open_time)
+        else:
+            logging.info('scheduling celery task for snipe.id %s immediately'
+                         % snipe.id)
+            tasks.rsvp.delay(snipe.id, event.meetup_id, user.token)
 
 
 def create_event(group, event_id):
@@ -127,30 +168,3 @@ def create_event(group, event_id):
     logging.info('created event with id: %s' % event.id)
 
     return event
-
-
-def create_snipes(event):
-    """ Given a group id and an event, create snipes for all subscribers.
-
-    Dispatch celery tasks for every snipe. If the event has an
-    rsvp_open time, dispatch the task with an eta.
-
-    """
-    logging.info('creating snipes')
-    for user in event.group.subscribers:
-        snipe = Snipe(event_id=event.id, user_id=user.id)
-        db.session.add(snipe)
-        db.session.commit()
-
-        logging.info('created snipe with id: %s' % snipe.id)
-        if snipe.event.rsvp_open_time:
-            logging.info('scheduling celery task for snipe.id %s and eta %s'
-                         % (snipe.id, snipe.event.rsvp_open_time))
-            tasks.rsvp.delay(snipe.id,
-                             event.meetup_id,
-                             user.token,
-                             eta=snipe.event.rsvp_open_time)
-        else:
-            logging.info('scheduling celery task for snipe.id %s immediately'
-                         % snipe.id)
-            tasks.rsvp.delay(snipe.id, event.meetup_id, user.token)

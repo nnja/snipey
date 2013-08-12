@@ -1,8 +1,7 @@
-from snipey import app, db, controller
-from test_snipey import SnipeyTestCase
+from snipey import db, event_listener
 from snipey.model import Group, User
-import json
-import event_listener
+
+from test_snipey import SnipeyTestCase
 
 
 class EventStreamTestCase(SnipeyTestCase):
@@ -40,7 +39,8 @@ class EventStreamTestCase(SnipeyTestCase):
         event_id = 124211852
         meetup_group_id = 8230562
 
-        event_url = 'http://www.meetup.com/hackerschool-friends/events/%s/' % event_id
+        event_url = ('http://www.meetup.com/hackerschool-friends/events/%s/'
+                     % event_id)
 
         user = User(meetup_id=user_id)
         group = Group(meetup_id=meetup_group_id)
@@ -64,7 +64,8 @@ class EventStreamTestCase(SnipeyTestCase):
         
         event_id = 124211852
         meetup_group_id = 8230562
-        event_url = 'http://www.meetup.com/hackerschool-friends/events/%s/' % event_id
+        event_url = ('http://www.meetup.com/hackerschool-friends/events/%s/'
+                     % event_id)
 
         user1 = User(meetup_id=user1_id)
         user2 = User(meetup_id=user2_id)
@@ -78,7 +79,7 @@ class EventStreamTestCase(SnipeyTestCase):
         user2.subscriptions.append(group)
 
         db.session.commit()
-        
+
         self.assertEqual(len(user1.subscriptions), 1)
         self.assertEqual(len(user2.subscriptions), 1)
 

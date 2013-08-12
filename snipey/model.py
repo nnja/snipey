@@ -34,7 +34,7 @@ class User(ReprMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     meetup_id = db.Column(db.Integer)
 
-    name = db.Column(db.String(200))
+   # name = db.Column(db.String(200))
     subscriptions = db.relationship(
         'Group', secondary=subscription_table, backref='subscribers')
 
@@ -80,3 +80,18 @@ class Event(ReprMixin, db.Model):
 
     name = db.Column(db.String(200))
     rsvp_open_time = db.Column(db.DateTime)
+
+
+class Stream(ReprMixin, db.Model):
+    __tablename__ = 'stream'
+
+    id = db.Column(db.Integer, primary_key=True)
+    since_mtime_milli = db.Column(db.String(32))
+
+    @classmethod
+    def current(cls):
+        stream = Stream.query.first()
+        if stream is None:
+            stream = Stream()
+            db.session.add(stream)
+        return stream

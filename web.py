@@ -1,13 +1,19 @@
 from snipey import app
 from snipey import event_listener
+from snipey.model import Stream
 import logging
 import threading
 
 
 def stream_task():
-    event_listener.process_stream(event_listener.open_event_stream())
-    # while True:
-    #     event_listener.reconnect()
+    if app.config['DEBUG']:
+        since_time = None
+    else:
+        since_time = Stream.current().since_mtime_milli
+
+    event_listener.connect(since_time=since_time)
+    while True:
+        event_listener.connect(since_time=Stream.current().since_mtime_milli)
 
 
 if __name__ == '__main__':
