@@ -1,4 +1,4 @@
-from snipey import db
+from snipey import db, utils
 # Todo: Make meetup_ids required for meetup objects
 # use an enum for snipe status
 
@@ -80,6 +80,24 @@ class Event(ReprMixin, db.Model):
 
     name = db.Column(db.String(200))
     rsvp_open_time = db.Column(db.DateTime)
+
+    @classmethod
+    def from_json(cls, data):
+        name = data['name']
+
+        open_time = data['rsvp_rules'].get('open_time')
+        if open_time:
+            open_time = utils.datetime_from_milli(open_time)
+
+        event_id = data['id']
+
+        group_id = data['group']['id']
+        group = Group.query.filter_by(meetup_id=group_id).first()
+
+        return cls(group=group,
+                   meetup_id=event_id,
+                   name=name,
+                   rsvp_open_time=open_time)
 
 
 class Stream(ReprMixin, db.Model):

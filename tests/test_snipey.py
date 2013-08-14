@@ -1,9 +1,14 @@
+import simplejson as json
+
 from snipey import app, db, controller
 from snipey.model import User, Group
-from flask.ext.testing import TestCase
+from flask_testing import TestCase
 
 
 class SnipeyTestCase(TestCase):
+    def __init__(self, *args, **kwargs):
+        TestCase.__init__(self, *args, **kwargs)
+
     def create_app(self):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         app.config['CSRF_ENABLED'] = False
@@ -62,6 +67,37 @@ class UserTestCase(SnipeyTestCase):
         assert user
 
         assert User.query.filter(User.meetup_id == meetup_id).first()
+
+
+class EventTestCase(SnipeyTestCase):
+    EVENT_JSON_DATA = """
+{"status": "upcoming", "utc_offset": -14400000, "event_url": "http://www.meetup.com/Pirates/events/133591802/", "group": {"name": "Pirates", "group_lat": 40.72999954223633, "join_mode": "closed", "who": "Guess what... we are Pirates", "group_lon": -73.98999786376953, "urlname": "Pirates", "id": 6967002}, "rsvp_rules": {"waitlisting": "off", "closed": 0, "guest_limit": 2}, "created": 1375904117000, "updated": 1375904117000, "visibility": "public", "name": "Future Event 1", "yes_rsvp_count": 0, "time": 1407452400000, "waitlist_count": 0, "headcount": 0, "maybe_rsvp_count": 0, "id": "133591802", "announced": false, "description": "<br />"}
+    """
+
+    def __init__(self, *args, **kwargs):
+        SnipeyTestCase.__init__(self, *args, **kwargs)
+
+    def setUp(self):
+        SnipeyTestCase.setUp(self)
+
+        group = Group(meetup_id='6967002')
+        db.session.add(group)
+        db.session.commit()
+
+        self.event_dict = json.loads(self.EVENT_JSON_DATA)
+
+    def _callFut(self, event_dict):
+        from snipey.model import Event
+        return Event.from_json(event_dict)
+
+    def test_event_from_json(self):
+        event = self._callFut(self.event_dict)
+
+        self.assertTrue(event)
+        self.assertEqual(event.meetup_id, '133591802')
+        self.assertFalse(event.rsvp_open_time)
+        self.assertTrue(event.group)
+        self.assertEqual(event.group.meetup_id, 6967002)
 
 
 class SubscribeTestCase(SnipeyTestCase):

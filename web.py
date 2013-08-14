@@ -1,8 +1,14 @@
+import time
+import logging
+import threading
+
+from requests import RequestException
+
 from snipey import app
 from snipey import event_listener
 from snipey.model import Stream
-import logging
-import threading
+
+RECONNECT_TIME = 5
 
 
 def stream_task():
@@ -11,13 +17,19 @@ def stream_task():
     else:
         since_time = Stream.current().since_mtime_milli
 
-    event_listener.connect(since_time=since_time)
     while True:
-        event_listener.connect(since_time=Stream.current().since_mtime_milli)
-
+        try:
+            event_listener.connect(since_time=since_time)
+        except RequestException as e:
+            logging.error(
+                'ERROR: %s. A connection error occured. '
+                'Attempting Reconnection in %s seconds...'
+                % (e, RECONNECT_TIME))
+            time.sleep(RECONNECT_TIME)
+        since_time = Stream.current().since_mtime_milli
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
 
     stream_thread = threading.Thread(target=stream_task)
     stream_thread.daemon = True

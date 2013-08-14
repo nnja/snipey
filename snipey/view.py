@@ -1,6 +1,6 @@
-from flask import g, session, request, url_for, flash, redirect, render_template
+from flask import (g, session, request, url_for, flash, redirect,
+                   render_template)
 from snipey import app, meetup_oauth, model, controller
-
 
 
 @app.before_request
@@ -11,6 +11,8 @@ def before_request():
     g.user = None
     if 'user_id' in session:
         g.user = model.User.query.filter_by(id=session['user_id']).first()
+
+
 @meetup_oauth.tokengetter
 def get_meetup_token(token=None):
     """

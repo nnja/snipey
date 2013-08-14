@@ -1,11 +1,8 @@
 import logging
-from snipey import tasks
-from snipey import db
-from snipey.model import Event, Group, Snipe, Stream
+from snipey import db, tasks, meetup
+from snipey.model import Group, Snipe, Stream, Event
 import requests
 import simplejson as json
-from datetime import datetime
-import config
 
 EVENT_STREAM_URL = 'http://stream.meetup.com/2/open_events'
 
@@ -16,6 +13,7 @@ def connect(since_time):
 
     """
     logging.info('connect to meetup rsvp. since_time: %s' % since_time)
+
     process_stream(open_event_stream(since_time=since_time))
 
 
@@ -47,6 +45,8 @@ def process_stream(request):
 
     TODO: This whole unit of work should be done as a celery task.
 
+    TODO: Event with a status of cancled should not be scheduled for snipe.
+
     """
     logging.info('processing stream.')
 
@@ -56,8 +56,9 @@ def process_stream(request):
         meetup_group_id = data['group']['id']
         event_url = data['event_url']
 
-        logging.info('meetup_group_id: %s, event_url: %s mtime: %s'
-                     % (meetup_group_id, event_url, data['mtime']))
+        if meetup_group_id == '6967002':
+            logging.info('meetup_group_id: %s, event_url: %s mtime: %s'
+                         % (meetup_group_id, event_url, data['mtime']))
 
         parse_snipes(meetup_group_id, event_url)
 
@@ -79,13 +80,33 @@ def parse_snipes(meetup_group_id, event_url):
     group_id, create the event and process snipes for all users.
 
     """
-
     group = Group.query.filter(Group.meetup_id == meetup_group_id).first()
 
     if group and group.subscribers:
         event_id = get_event_id(event_url)
-        event = create_event(group, event_id)
+        event = get_event(event_id)
         create_snipes(event)
+
+
+def get_event(event_id):
+    """Get an event by a meetup event_id.
+
+    If the event exists in the database, return it. Otherwise create
+    an event from data provided by the Meetup API.
+
+    """
+    event = Event.query.filter_by(meetup_id=event_id).first()
+    if event:
+        return event
+
+    data = meetup.fetch_event(event_id)
+
+    event = Event.from_json(data)
+    db.session.add(event)
+    db.session.commit()
+
+    logging.info('created event with id: %s' % event.id)
+    return event
 
 
 def get_event_id(event_url):
@@ -117,54 +138,11 @@ def create_snipes(event):
         if snipe.event.rsvp_open_time:
             logging.info('scheduling celery task for snipe.id %s and eta %s'
                          % (snipe.id, snipe.event.rsvp_open_time))
-            tasks.rsvp.delay(snipe.id,
-                             event.meetup_id,
-                             user.token,
-                             eta=snipe.event.rsvp_open_time)
+            tasks.rsvp.apply_async(args=[snipe.id,
+                                         event.meetup_id,
+                                         user.token],
+                                   eta=snipe.event.rsvp_open_time)
         else:
             logging.info('scheduling celery task for snipe.id %s immediately'
                          % snipe.id)
             tasks.rsvp.delay(snipe.id, event.meetup_id, user.token)
-
-
-def create_event(group, event_id):
-    """ Make a call to the Meetup API to retrieve event information.
-
-    Use the data to create a reference event in the database.
-
-    NOTE: Since the event is being retrieved without authorization
-    information, private groups are not supported.
-
-    TODO: Implement Error handing, especially if the event is not found.
-    """
-
-    params = {
-        'fields': 'rsvp_rules',
-        'key': config.MEETUP_API_KEY,
-    }
-
-    url = "%sevent/%s" % (config.BASE_URL, event_id)
-    resp = requests.get(url=url, params=params)
-    data = resp.json()
-
-    logging.info('creating an event for group %s and event_id: %s and url:%s'
-                 % (group.id, event_id, url))
-    logging.info('data is: %s' % data)
-
-    name = data['name']
-    open_time = data['rsvp_rules'].get('open_time')
-    if open_time:
-        open_time = datetime.utcfromtimestamp(open_time//1000).replace(
-            microsecond=open_time % 1000*1000)
-
-    event = Event(group=group,
-                  meetup_id=event_id,
-                  name=name,
-                  rsvp_open_time=open_time)
-
-    db.session.add(event)
-    db.session.commit()
-
-    logging.info('created event with id: %s' % event.id)
-
-    return event
