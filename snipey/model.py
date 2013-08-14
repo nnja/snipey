@@ -1,4 +1,5 @@
 from snipey import db, utils
+from sqlalchemy.orm.exc import NoResultFound
 # Todo: Make meetup_ids required for meetup objects
 # use an enum for snipe status
 
@@ -65,10 +66,37 @@ class Group(ReprMixin, db.Model):
     __tablename__ = 'group'
 
     id = db.Column(db.Integer, primary_key=True)
-    meetup_id = db.Column(db.Integer)
+    meetup_id = db.Column(db.Integer, index=True, unique=True)
 
     name = db.Column(db.String(200))
     events = db.relationship('Event', backref='group', lazy='dyanmic')
+
+    @classmethod
+    def from_json(cls, data):
+        """ Return a list of public groups represented by the provided JSON.
+        TODO: Might need timezone, but should be ok to default to Eastern.
+        """
+        groups = []
+        results = data['results']
+        for result in results:
+            meetup_id = result['id']
+            name = result['name']
+
+            group = cls(meetup_id=meetup_id, name=name)
+            groups.append(group)
+
+        return groups
+
+    @classmethod
+    def store_groups(cls, groups):
+        for group in groups:
+            try:
+                group = Group.query.filter_by(meetup_id=group.meetup_id).one()
+            except NoResultFound:
+                db.session.add(group)
+
+        db.session.commit()
+        return groups
 
 
 class Event(ReprMixin, db.Model):
@@ -76,7 +104,7 @@ class Event(ReprMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    meetup_id = db.Column(db.Integer)
+    meetup_id = db.Column(db.Integer, index=True, unique=True)
 
     name = db.Column(db.String(200))
     rsvp_open_time = db.Column(db.DateTime)
