@@ -1,6 +1,8 @@
 from flask import (g, session, request, url_for, flash, redirect,
                    render_template)
 from snipey import app, meetup_oauth, model, controller
+from snipey.meetup import fetch_user_groups
+from flask_wtf import widgets, Form, SelectMultipleField
 
 
 @app.before_request
@@ -71,17 +73,19 @@ def oauth_authorized(resp):
         flash(u'You denied the request to sign in.', 'alert-error')
         return redirect(url_for('index'))
 
+    print '\n\n%s\n\n' % resp
+
     meetup_id = resp['member_id']
-    name = resp['name']
+    #name = resp['name']
     oauth_token = resp['oauth_token']
     oauth_secret = resp['oauth_token_secret']
 
-    user = controller.fetch_user(meetup_id, (oauth_token, oauth_secret), name)
+    user = controller.fetch_user(meetup_id, (oauth_token, oauth_secret))
 
     session['user_id'] = user.id
     flash('You were signed in', 'alert-info')
 
-    return redirect(url_for('snipe'))
+    return redirect(url_for('subscribe'))
 
 
 @app.errorhandler(404)
@@ -101,6 +105,33 @@ def index():
         else:
             flash('Something went wrong', 'alert-error')
     return render_template('index.html', mup_user=mup_user)
+
+
+class SubscriptionForm(Form):
+    groups = SelectMultipleField(
+        widget=widgets.ListWidget(prefix_label=False),
+        option_widget=widgets.CheckboxInput())
+
+
+@app.route('/subscribe', methods=['GET', 'POST'])
+def subscribe():
+    if g.user is None:
+        return url_for('index')
+
+    # TODO Redo below with proper form validation. Good enough for now.
+    form = SubscriptionForm()
+    form.groups.choices = controller.get_group_list(g.user)
+
+    if request.method == 'POST':
+        selected_groups = form.data['groups']
+        if not selected_groups:
+            flash('Please select at least one group.', 'alert-error')
+        else:
+            controller.subcribe_to_groups(g.user, selected_groups)
+            flash('You are subscribed to %s groups'
+                  % len(selected_groups), 'alert-success')
+
+    return render_template('subscribe.html', form=form)
 
 
 @app.route('/snipe')

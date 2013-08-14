@@ -1,6 +1,6 @@
-/**
- * Extra large button extensions. Extends `.btn`.
- */
+/***/
+ /** Extra large button extensions. Extends `.btn`.*/
+ /**/
 .btn-xlarge {
     padding: 18px 28px;
     font-size: 22px;
@@ -10,17 +10,25 @@
     border-radius: 8px;
 }
 
-table {
-    font-size: 14px;
+.li-spacer {
+    padding: 0px 5px 0px 5px;
+    line-height: 60px;
 }
 
-table th {
-    font-size: 14px;
-    background: rgba(142, 255, 243, 0.40) none;
+.navbar-nomargin {
+    margin-bottom: 0;
 }
 
-label {
-    font-size: 18px;
-    font-weight: 200;
-    line-height: 30px;
+ul#groups{
+    list-style-type: none;
+}
+
+#groups input {
+    float: left;
+    margin: 0;
+}
+
+#groups label {
+    display: inline-block;
+    margin: 0 0 0 10px;
 }

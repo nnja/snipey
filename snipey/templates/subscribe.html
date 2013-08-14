@@ -1,0 +1,18 @@
+{% extends "bootstrap_responsive.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block body_content %}
+    {% include "navbar.html" %}
+      <div class="container">
+        <div class="well">
+            {% include "flash.html" %} 
+            <form method="POST" class="form-inline">
+                {{ form.hidden_tag() }}
+                {{ wtf.form_errors(form, False) }}
+                <h4>Which groups to subscribe to?</h4>
+                {{ form.groups }}
+                <button type="submit"> Submit </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
