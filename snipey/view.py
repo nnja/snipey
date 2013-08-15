@@ -25,22 +25,8 @@ def get_meetup_token(token=None):
     store this in the database, consider putting it into the session
     instead.
     """
-    # oauth_secret = request.args.get('secret', '')
-    # oauth_token = request.args.get('token', '')
-
-    # if oauth_secret and oauth_token:
-    #     return oauth_token, oauth_secret
-
-    print 'token is %s' % token
-    if token is not None:
-        print '\n\ni had token@!\n\n'
-        user = model.User.query.filter_by(token=token).first()
-        return token, user.secret
-
     if 'user_id' in session:
-        print '\n\nuser_id in session %s \n\n' % session['user_id']
-        user = model.User.query.filter_by(id=session['user_id']).first()
-        return user.token, user.secret
+        g.user = model.User.query.filter_by(id=session['user_id']).first()
 
     if g.user:
         return g.user.token, g.user.secret
@@ -73,8 +59,6 @@ def oauth_authorized(resp):
         flash(u'You denied the request to sign in.', 'alert-error')
         return redirect(url_for('index'))
 
-    print '\n\n%s\n\n' % resp
-
     meetup_id = resp['member_id']
     #name = resp['name']
     oauth_token = resp['oauth_token']
@@ -106,6 +90,10 @@ def index():
             flash('Something went wrong', 'alert-error')
     return render_template('index.html', mup_user=mup_user)
 
+@app.route('/about')
+def about():
+    return 'about'
+
 
 class SubscriptionForm(Form):
     groups = SelectMultipleField(
@@ -130,12 +118,13 @@ def subscribe():
             controller.subcribe_to_groups(g.user, selected_groups)
             flash('You are subscribed to %s groups'
                   % len(selected_groups), 'alert-success')
+            return render_template("snipe.html")
 
     return render_template('subscribe.html', form=form)
 
 
-@app.route('/snipe')
-def snipe():
- #   import tasks
-#    tasks.rsvp.delay(48598382, 133591952, g.user.token) 
-    return 'hello'
+@app.route('/snipes')
+def snipes():
+    snipes = g.user.snipes
+    subscriptions = g.user.subscriptions
+    return render_template('snipe.html', snipes=snipes, subscriptions=subscriptions)

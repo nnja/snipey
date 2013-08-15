@@ -1,5 +1,4 @@
-<!--enter an event_id-->
-<!--submit the form-->
+<<!--submit the form-->
 <!--use the event_id to create a celery task-->
 <!--save it to a table, to display your active snipes-->
 
@@ -10,67 +9,58 @@
     {% include "navbar.html" %}
 
     <div class="span6 offset4 text-center span-fixed-sidebar">
-        <div class="hero-unit text-center">
-
-            <div class="container-narrow ">
-                <div class="jumbotron">
-                    <div>
-                        <div class="input-append">
-                            <form align="center" method="post">
-                                {{ form.csrf_token }}
-                                {{ wtf.form_errors(form, False) }}
-                                <label>Find an upcoming event to Snipe</label>
-                                {{ (form.event_id(placeholder="URL or Event Id")) }}
-                                <button name="submit1" class="btn btn-primary" type="submit"><i
-                                        class="icon-plus-sign"></i></button>
-                                <p></p>
-                                <label>Or, Snipe all new events from a Meetup Group </label>
-                                {{ (form.event_id(placeholder="URL or Group Name")) }}
-                                <button name="submit2" class="btn btn-primary" type="submit"><i
-                                        class="icon-plus-sign"></i></button>
-                            </form>
-                        </div>
-
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    <div class="{{ category }}">
-                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                        &nbsp;&nbsp;{{ message }}
-                                    </div>
-                                    <br>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-
-                    {% if snipes %}
-                        <div class="span5">
-                            <p>Your active Snipes </p>
-
-                            <table class="table table-striped table-condensed table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>group</th>
-                                    <th>event</th>
-                                    <th>Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                {% for snipe in snipes %}
-                                    <tr>
-                                        <td>{{ snipe.group }}</td>
-                                        <td>{{ snipe.event }}</td>
-                                        <td><span class="label label-success">{{ snipe.status }}</span>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% endif %}
+        <div class="container-narrow ">
+            <div class="jumbotron">
+                <div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="{{ category }}">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    &nbsp;&nbsp;{{ message }}
+                                </div>
+                                <br>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                 </div>
+
+                {% include "active_subs.html" %}
+
+                {% if snipes %}
+                    <div class="span5">
+                        <h2 class="text-info">Snipes</h2>
+                        <table class="table table-striped table-condensed">
+                            {# <table class="table table-striped table-condensed table-bordered"> #}
+                            <thead>
+                            <tr>
+                                <th>Group</th>
+                                <th>Event</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for snipe in snipes %}
+                                <tr>
+                                    <td>{{ snipe.event.group.name }}</td>
+                                    <td>{{ snipe.event.name }}</td>
+                                    {# <td><a href="{{ snipe.event.url }}">{{ snipe.event.name }}</a></td> #}
+                                    {% if snipe.status == '1' %}
+                                        <td><span class="label label-warning"> Scheduled </span></td>
+                                    {% endif %}
+                                    {% if snipe.status == '2' %}
+                                        <td><span class="label label-success"> Succeded </span></td>
+                                    {% endif %}
+                                    {% if snipe.status == '3' %}
+                                        <td><span class="label label-important"> Failed </span></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

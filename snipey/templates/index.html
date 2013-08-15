@@ -1,8 +1,6 @@
 {% extends "bootstrap_responsive.html" %}
 {% block body_content %}
     {% include "navbar.html" %}
-
-    <div class="container">
         <div class="hero-unit offset1 span7">
             <h1>Missed out?</h1>
             <br>
@@ -24,8 +22,7 @@
                     </p>
                     <br>
                     <p><a href="{{ url_for('login') }}" class="btn btn-xlarge btn-danger"><i
-                            class="icon-user icon-white"></i> Sign
-                        in with Meetup &raquo;</a></p>
+                            class="icon-user icon-white"></i> Sign in with Meetup &raquo;</a></p>
                 {% endif %}
 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -39,5 +36,5 @@
                 {% endif %}
             {% endwith %}
         </div>
-    </div>
+  
 {% endblock %}

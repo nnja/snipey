@@ -1,38 +1,34 @@
-   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-extensions.css') }}">
-    <div class="navbar navbar-static-top navbar-inverse nav">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a class="brand" href="/"><img width="24" height="24"
-                                               src="{{ url_for('static', filename='img/Archery-Target-icon-blue.png') }}">
-                    snipey</a>
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        <li class="divider-vertical"></li>
-                        <li class="active"><a href="#"><i class="icon-home icon-white"></i> Home</a></li>
-                        <li class="divider-vertical"></li>
-                        <li><a href="#"><i class="icon-info-sign icon-white"></i> About</a></li>
-                    </ul>
-                    {% if g.user %}
-                        <div class="pull-left">
-                            <ul class="nav pull-left">
-                                <li class="dropdown"></i><a href="#" class="dropdown-toggle" data-toggle="pdropdown"><i
-                                        class="icon-user icon-white"></i>
-                                    Welcome, {{ g.user.name }} <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="/snipe"><i class="icon-cog"></i> Manage Subscriptions</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="{{ url_for('logout') }}"><i class="icon-off"></i> Logout</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    {% endif %}
-                </div>
+{% macro render_sitem(endpoint, display, iconcls='', active='') %}
+    <li {% if request.endpoint == endpoint or active == endpoint %} class='active' {% endif %}>
+        <a class='{{ cls }}' href="{{ url_for(endpoint) }}"><i class="{{ iconcls }} icon-white"></i> {{ display }}</a>
+    </li>
+    <li class="divider-vertical"></li>
+{% endmacro %}
+
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-extensions.css') }}">
+<div class="navbar navbar-inverse">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+            <a class="brand" href="#" name="top">Snipey</a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    {{ render_sitem('index', 'Home', iconcls='icon-home', active=active_page) }}
+                    {{ render_sitem('about', 'About', iconcls='icon-info-sign', active=active_page) }}
+                    {{ render_sitem('subscribe', 'Subscriptions', iconcls='icon-file', active=active_page) }}
+                    {{ render_sitem('snipes', 'Snipes', iconcls='icon-signal', active=active_page) }}
+                    {{ render_sitem('logout', 'Logout', iconcls='icon-share', active=active_page) }}
+                </ul>
             </div>
+            <!--/.nav-collapse -->
         </div>
+        <!--/.container-fluid -->
     </div>
+    <!--/.navbar-inner -->
+</div>
+<!--/.navbar -->
