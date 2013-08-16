@@ -60,16 +60,13 @@ def oauth_authorized(resp):
         return redirect(url_for('index'))
 
     meetup_id = resp['member_id']
-    #name = resp['name']
     oauth_token = resp['oauth_token']
     oauth_secret = resp['oauth_token_secret']
 
     user = controller.fetch_user(meetup_id, (oauth_token, oauth_secret))
 
     session['user_id'] = user.id
-    flash('You were signed in', 'alert-info')
-
-    return redirect(url_for('subscribe'))
+    return redirect(url_for('snipes'))
 
 
 @app.errorhandler(404)
@@ -89,6 +86,7 @@ def index():
         else:
             flash('Something went wrong', 'alert-error')
     return render_template('index.html', mup_user=mup_user)
+
 
 @app.route('/about')
 def about():
@@ -118,7 +116,7 @@ def subscribe():
             controller.subcribe_to_groups(g.user, selected_groups)
             flash('You are subscribed to %s groups'
                   % len(selected_groups), 'alert-success')
-            return render_template("snipe.html")
+            return snipes()
 
     return render_template('subscribe.html', form=form)
 

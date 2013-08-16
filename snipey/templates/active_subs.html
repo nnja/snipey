@@ -1,0 +1,66 @@
+{% if not subscriptions %}
+    <h2 class="text-info">You have no active subscriptions</h2>
+{% else %}
+    <h2 class="text-info">Subscriptions</h2>
+{% endif %}
+<p>
+    <small>Subscribe to a Meetup Group to automatically Snipe a spot
+    as soon as a new event is added.</small>
+</p>
+<div class="btn-toolbar">
+    <a href="{{ url_for("subscribe") }}">
+        <button class="btn {%if not subscriptions %}btn-xlarge btn-info"{% else %}btn-primary{% endif %}">Add Subscriptions</button>
+    </a>
+</div>
+
+{% if subscriptions %}
+    <div class="well well-small">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="span2">#</th>
+                <th class="span6">Group</th>
+                <th style="width: 36px;" class="span4">Unsubscribe</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for group in subscriptions %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td> {{ group.name }}</td>
+                    <td>
+                        <a href="#deleteModal" role="button" data-toggle="modal"><i class="icon-remove"></i></a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+    {#    <div class="pagination">#}
+    {#        <ul>#}
+    {#            <li><a href="#">Prev</a></li>#}
+    {#            <li><a href="#">1</a></li>#}
+    {#            <li><a href="#">2</a></li>#}
+    {#            <li><a href="#">3</a></li>#}
+    {#            <li><a href="#">4</a></li>#}
+    {#            <li><a href="#">Next</a></li>#}
+    {#        </ul>#}
+    {#    </div>#}
+    <div class="modal small hide fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Delete Confirmation</h3>
+        </div>
+        <div class="modal-body">
+            <p class="error-text">Are you sure you want to delete the subscription?</p>
+            <p class="error-text">All snipes associated with this group will be deleted as well.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            <button class="btn btn-danger" data-dismiss="modal">Delete</button>
+        </div>
+    </div>
+{% endif %}

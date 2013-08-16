@@ -1,13 +1,15 @@
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="row">
-            {% for category, message in messages %}
-                <div class="alert {{ category }} span6" id="flash">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    &nbsp;&nbsp;{{ message }}
-                </div>
-                <br>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
+<div class="jumbotron">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="row">
+                {% for category, message in messages %}
+                    <div class="alert {{ category }} span6" id="flash">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        &nbsp;&nbsp;{{ message }}
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+</div>
