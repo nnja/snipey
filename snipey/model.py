@@ -1,5 +1,6 @@
 from snipey import db, utils
 from sqlalchemy.orm.exc import NoResultFound
+import config
 # Todo: Make meetup_ids required for meetup objects
 # use an enum for snipe status
 
@@ -107,6 +108,7 @@ class Event(ReprMixin, db.Model):
     meetup_id = db.Column(db.Integer, index=True, unique=True)
 
     name = db.Column(db.String(200))
+    url = db.Column(db.String(200))
     rsvp_open_time = db.Column(db.DateTime)
 
     @classmethod

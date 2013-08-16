@@ -45,7 +45,7 @@ def subcribe_to_groups(user, meetup_ids):
     """
     Subscribe a user to the given meetup groups based on meetup id.
 
-    If a Group with the provided meetup group id doesn't exist, create
+    If a Group with the provided meetup_id doesn't exist, create
     it.
     """
     data = meetup.fetch_groups(meetup_ids)
@@ -64,15 +64,10 @@ def get_group_list(user):
     """
     Get a list tuples composed of (meetup_id, group name) for every
     Meetup group that a User belongs to.
-
-    If the filter_subscribed flag is set, don't include any groups
-    that the user is already subscribed to.
     """
     if user is None:
         return []
 
     results = meetup.fetch_user_groups(user.meetup_id)['results']
-    subscribed_ids = [group.meetup_id for group in user.subscriptions]
     return ([(result['id'], result['name']) for result in results
-             if result['visibility'] == 'public'
-             and result['id'] not in subscribed_ids])
+             if result['visibility'] == 'public'])

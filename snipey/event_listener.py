@@ -56,9 +56,8 @@ def process_stream(request):
         meetup_group_id = data['group']['id']
         event_url = data['event_url']
 
-        if meetup_group_id == '6967002':
-            logging.info('meetup_group_id: %s, event_url: %s mtime: %s'
-                         % (meetup_group_id, event_url, data['mtime']))
+        logging.info('meetup_group_id: %s, event_url: %s mtime: %s'
+                     % (meetup_group_id, event_url, data['mtime']))
 
         parse_snipes(meetup_group_id, event_url)
 
@@ -85,6 +84,7 @@ def parse_snipes(meetup_group_id, event_url):
     if group and group.subscribers:
         event_id = get_event_id(event_url)
         event = get_event(event_id)
+        event.url = event_url
         create_snipes(event)
 
 
