@@ -55,7 +55,7 @@ def subcribe_to_groups(user, meetup_ids):
     subscribed_groups = [group.meetup_id for group in user.subscriptions]
     for group in groups:
         if group.meetup_id not in subscribed_groups:
-            user.subscriptions.append(group)
+            user.subscriptions.append(Group.query.filter_by(meetup_id=group.meetup_id).first())
 
     db.session.commit()
 
