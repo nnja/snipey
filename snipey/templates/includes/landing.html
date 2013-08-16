@@ -18,7 +18,7 @@
         </p>
         <br>
         <p>
-        <a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-user"></i> Sign in with Meetup</a>
+        <a href="{{ url_for('login') }}" class="btn btn-danger btn-large"><i class="icon-white icon-user"></i> Sign in with Meetup</a>
     {% endif %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}

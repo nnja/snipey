@@ -1,8 +1,9 @@
 from flask import (g, session, request, url_for, flash, redirect,
                    render_template)
 from snipey import app, meetup_oauth, model, controller
-from snipey.meetup import fetch_user_groups
+from sqlalchemy.orm.exc import NoResultFound
 from flask_wtf import widgets, Form, SelectMultipleField
+from snipey.model import Group
 
 
 @app.before_request
@@ -116,7 +117,14 @@ def subscribe():
             controller.subcribe_to_groups(g.user, selected_groups)
             flash('You subscribed to %s groups'
                   % len(selected_groups), 'alert-success')
-            return snipes()
+
+            snipes = g.user.snipes
+            subscriptions = g.user.subscriptions
+            return redirect(url_for('snipes'))
+            # return redirect(
+            #     'snipes.html', snipes=snipes, subscriptions=subscriptions)
+
+            #return snipes()
 
     return render_template('subscribe.html', form=form)
 
@@ -125,4 +133,23 @@ def subscribe():
 def snipes():
     snipes = g.user.snipes
     subscriptions = g.user.subscriptions
-    return render_template('snipes.html', snipes=snipes, subscriptions=subscriptions)
+    return render_template(
+        'snipes.html', snipes=snipes, subscriptions=subscriptions)
+
+
+@app.route('/_unsubscribe/<int:group_id>', methods=['DELETE'])
+def unsubscribe(group_id):
+    """ Unsubscribe a user from a group via Ajax"""
+    if g.user and group_id:
+        try:
+            group = Group.query.filter_by(meetup_id=group_id).one()
+            controller.unsubscribe_from_group(g.user, group)
+            app.logger.info(
+                'Unsubscribed user with id: %s from group with id: %s'
+                % (g.user.id, group.id))
+            return "", 200
+        except NoResultFound:
+            app.logger.error(
+                'Error unsubscribing a user with id: %s from group with id %s'
+                % (g.user.id, group.id))
+            return "", 404
