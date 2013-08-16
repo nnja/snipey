@@ -114,7 +114,7 @@ def subscribe():
             flash('Please select at least one group.', 'alert-error')
         else:
             controller.subcribe_to_groups(g.user, selected_groups)
-            flash('You are subscribed to %s groups'
+            flash('You subscribed to %s groups'
                   % len(selected_groups), 'alert-success')
             return snipes()
 

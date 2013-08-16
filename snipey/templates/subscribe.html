@@ -3,18 +3,23 @@
 
 {% block body_content %}
     {% include "navbar.html" %}
-    <div class="container">
-        <div class="well">
+    <div class="span6 span-fixed-sidebar">
+        <div class="container-narrow">
             {% include "flash.html" %}
+            <h2 class="text-info">Subscribe to a Group</h2>
+
+            <p>
+                <small>Private groups are currently not supported.</small>
+            </p>
+
             <form method="POST" class="form-inline">
-                {{ form.hidden_tag() }}
-                {{ wtf.form_errors(form, False) }}
-                <h4>Which groups to subscribe to?</h4>
-                <p>
-                    <small>Private groups are currently not supported.</small>
-                </p>
-                {{ form.groups }}
-                <button type="submit"> Submit</button>
+                <div class="well well-small">
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_errors(form, False) }}
+                    {{ form.groups }}
+                </div>
+                <button class="btn btn-primary" type="submit"> Submit</button>
+                <a class="btn btn-danger" href="{{ url_for('snipes') }}"> Cancel</a>
             </form>
         </div>
     </div>
