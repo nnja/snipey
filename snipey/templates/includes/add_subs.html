@@ -1,0 +1,14 @@
+{% import "bootstrap_wtf.html" as wtf %}
+<h2 class="text-info">Subscribe to a Group</h2>
+<p>
+    <small>Private groups are currently not supported.</small>
+</p>
+<form method="POST" class="form-inline">
+    <div class="well well-small">
+        {{ form.hidden_tag() }}
+        {{ wtf.form_errors(form, False) }}
+        {{ form.groups }}
+    </div>
+    <button class="btn btn-primary" type="submit"> Submit</button>
+    <a class="btn btn-danger" href="{{ url_for('snipes') }}"> Cancel</a>
+</form>

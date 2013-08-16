@@ -125,4 +125,4 @@ def subscribe():
 def snipes():
     snipes = g.user.snipes
     subscriptions = g.user.subscriptions
-    return render_template('snipe.html', snipes=snipes, subscriptions=subscriptions)
+    return render_template('snipes.html', snipes=snipes, subscriptions=subscriptions)

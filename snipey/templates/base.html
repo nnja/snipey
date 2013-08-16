@@ -1,0 +1,18 @@
+{% extends "bootstrap_responsive.html" %}
+{% block style %}
+    {{ super() }}
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap-extensions.css') }}">
+{% endblock %}
+{% block body_content %}
+    <div id="wrap">
+        {% include 'includes/navbar.html' %}
+        {% block content %}
+        {% endblock %}
+        <div id="push"></div>
+    </div>
+    {% include 'includes/footer.html' %}
+{% endblock %}
+{% block bootstrap_js_bottom %}
+    {{ super() }}
+    <script src="http://platform.twitter.com/widgets.js"></script>
+{% endblock %}

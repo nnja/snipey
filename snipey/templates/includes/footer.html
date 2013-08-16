@@ -1,0 +1,22 @@
+<footer class="footer span12">
+    <div class="container">
+        <div class="row">
+            <div class="span5 offset1">
+                <p class="muted credit">
+                    Written by <a href="http://nnjas.net">Nina Zakharenko</a>.
+                    {% if request.endpoint == 'index' %}
+                    <br>
+                    <small>
+                        <a href="http://thenounproject.com/noun/scissors/#icon-No18362" target="_blank">Scissors</a>
+                        designed by <a href="http://thenounproject.com/nrodriguezlima" target="_blank">nikki
+                        rodriguez</a> from The Noun Project
+                    </small>
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                {% include 'includes/stripe-social.html' %}
+            </div>
+        </div>
+    </div>
+</footer>

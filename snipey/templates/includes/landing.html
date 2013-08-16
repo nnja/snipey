@@ -1,0 +1,34 @@
+<div class="hero-unit offset1 span7">
+    <h1>
+        <img src="{{ url_for('static', filename='img/scissors.svg') }}"/>
+        Snipey</h1>
+    <br>
+
+    <p>Missed out? Meetups can be popular, and it's frustrating getting left behind.</p>
+    {% if g.user %}
+        {% if mup_user %}
+            <h3>You're logged in as:</h3>
+            {{ mup_user.name }}
+            {{ mup_user.meetup_id }}
+        {% endif %}
+    {% else %}
+        <p>
+            Sign in to let Snipey keep track of Meetup groups for you, and RSVP for you at just the
+            right time.
+        </p>
+        <br>
+        <p>
+        <a href="#" class="btn btn-danger btn-large"><i class="icon-white icon-user"></i> Sign in with Meetup</a>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ category }}">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    &nbsp;&nbsp;{{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
