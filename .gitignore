@@ -42,3 +42,13 @@ nosetests.xml
 
 # Emacs
 **/.#*
+**/.dirlocals.el
+
+# Prod settings
+prod_settings.ini
+
+## temporarily ignore config
+config.py
+
+# ignore rope
+.ropeproject/
