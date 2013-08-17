@@ -21,17 +21,20 @@
             <tbody>
             {% for snipe in snipes %}
                 <tr>
-                    {% if snipe.status == '1' %}
-                        <td><span class="label label-warning"> Scheduled </span></td>
-                    {% endif %}
-                    {% if snipe.status == '2' %}
-                        <td><span class="label label-success"> Succeded </span></td>
-                    {% endif %}
-                    {% if snipe.status == '3' %}
-                        <td><span class="label label-important"> Failed </span></td>
-                    {% endif %}
-                    <td>{{ snipe.event.group.name }}</td>
-                    <td><a href="{{ snipe.event.url }}" target="_blank">{{ snipe.event.name }}</a></td>
+                  {% if snipe.status == 0 %}
+                  <td><span class="label label-warning"> Scheduled </span></td>
+		  {% endif %}
+		  {% if snipe.status == 1 %}
+                  <td><span class="label label-success"> Succeded </span></td>
+		  {% endif %}
+		  {% if snipe.status == 2 %}
+                  <td><span class="label label-important"> Failed </span></td>
+		  {% endif %}
+		  {% if snipe.status == 3 %}
+                  <td><span class="label"> Canceled </span></td>
+                  {% endif %}
+                  <td>{{ snipe.event.group.name }}</td>
+                  <td><a href="{{ snipe.event.url }}" target="_blank">{{ snipe.event.name }}</a></td>
                 </tr>
             {% endfor %}
             </tbody>

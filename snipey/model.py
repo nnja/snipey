@@ -1,8 +1,5 @@
 from snipey import db, utils
 from sqlalchemy.orm.exc import NoResultFound
-import config
-# Todo: Make meetup_ids required for meetup objects
-# use an enum for snipe status
 
 
 class ReprMixin(object):
@@ -34,12 +31,10 @@ class User(ReprMixin, db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    meetup_id = db.Column(db.Integer)
+    meetup_id = db.Column(db.Integer, index=True, unique=True)
 
-   # name = db.Column(db.String(200))
     subscriptions = db.relationship(
         'Group', secondary=subscription_table, backref='subscribers')
-
     snipes = db.relationship('Snipe', backref='user')
 
     token = db.Column(db.String(200))
@@ -47,9 +42,10 @@ class User(ReprMixin, db.Model):
 
 
 class Snipe(ReprMixin, db.Model):
-    SCHEDULED = 1
-    SUCCEEDED = 2
-    FAILED = 3
+    SCHEDULED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    CANCELED = 3
 
     __tablename__ = 'snipe'
 
@@ -58,9 +54,7 @@ class Snipe(ReprMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     event = db.relationship('Event')
-
-    # TODO: look at sqlalchemy support for enums
-    status = db.Column(db.String(20), default=SCHEDULED)
+    status = db.Column(db.Integer, default=SCHEDULED)
 
 
 class Group(ReprMixin, db.Model):

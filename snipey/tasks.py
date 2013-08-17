@@ -47,6 +47,9 @@ def rsvp(snipe_id, meetup_event_id, token):
     if not snipe:
         current_app.logger.error('Snipe with id: %s not found!' % snipe_id)
         return
+    elif snipe.status == Snipe.CANCELED:
+        current_app.logger.info('Snipe with id: %s was canceled.' % snipe_id)
+        return
 
     resp = celery_oauth.post('rsvp', token=token, data={
         'event_id': meetup_event_id,

@@ -1,5 +1,5 @@
 from snipey import db, meetup
-from snipey.model import User, Group
+from snipey.model import User, Group, Snipe
 
 
 def fetch_user(meetup_id, token_secret=(), name=None):
@@ -33,12 +33,21 @@ def unsubscribe_from_group(user, group):
     """
     Unsubscribe a user from a given meetup group.
 
-    When the user ubsubscribes, remove all pending snipes for this group,
-    TODO: cancel any associated celery tasks
-    TODO: throw an exception if no matching subscription is found
+    When the user unsubscribes, cancel all pending snipes for this group
+    TODO: Decide how to handle exceptions
     """
-    user.subscriptions.remove(group)
-    db.session.commit()
+    try:
+        snipes = Snipe.query.join(
+            User.subscriptions).filter(Group.id == group.id).all()
+        user.subscriptions.remove(group)
+
+        for snipe in snipes:
+            if snipe.status == Snipe.SCHEDULED:
+                snipe.status = Snipe.CANCELED
+
+        db.session.commit()
+    except ValueError:
+        pass
 
 
 def subcribe_to_groups(user, meetup_ids):
@@ -55,7 +64,8 @@ def subcribe_to_groups(user, meetup_ids):
     subscribed_groups = [group.meetup_id for group in user.subscriptions]
     for group in groups:
         if group.meetup_id not in subscribed_groups:
-            user.subscriptions.append(Group.query.filter_by(meetup_id=group.meetup_id).first())
+            user.subscriptions.append(
+                Group.query.filter_by(meetup_id=group.meetup_id).first())
 
     db.session.commit()
 
