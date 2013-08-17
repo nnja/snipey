@@ -53,6 +53,9 @@ def process_stream(request):
     for line in request.iter_lines():
         data = json.loads(line)
 
+        if data['status'] in ('canceled', 'deleted'):
+            continue
+
         meetup_group_id = data['group']['id']
         event_url = data['event_url']
 
