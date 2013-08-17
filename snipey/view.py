@@ -49,8 +49,8 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    flash('You were signed out', 'alert-success')
-    return redirect(request.referrer or url_for('index'))
+    flash(u'You were signed out', 'alert-success')
+    return redirect(url_for('index'))
 
 
 @app.route('/oauth-authorized')

@@ -1,7 +1,7 @@
 // A janky function that deletes subscriptions via ajax
 ;$(function() {
     var do_delete = function(e) {
-        var row = $('#unsubscribe').parents("tr:first")
+	var row = $(this).parent().parent()
         var id = row.attr('id')
 
         $.ajax({
@@ -13,12 +13,13 @@
             success: function() {
                 row.fadeOut(300,function() {
                     row.remove();
-                    if ($("#subtable").find("#unsubscribe").length == 0) {
-                        $("#subtable").parent().text("You have no active subscriptions.")
+                    if ($('#subtable').find('#unsubscribe').length == 0) {
+                        $('#subtable').parent().text('You have no active subscriptions.')
                     }
                 });
             }
-        });   
+        }); 
+	
     };
 
     $('a#unsubscribe').bind('click', do_delete);
@@ -30,4 +31,4 @@ function createAutoClosingAlert(selector, delay) {
                     selector.remove();
                 });
 }
-createAutoClosingAlert($("#flash").parent(), 2000);
+createAutoClosingAlert($('#flash').parent(), 2000);

@@ -19,22 +19,20 @@
         <table class="table" id="subtable">
             <thead>
             <tr>
-                <th class="span2">#</th>
-                <th class="span6">Group</th>
-                <th style="width: 36px;" class="span4">Unsubscribe</th>
+              <th class="span6">Group</th>
+              <th style="width: 36px;" class="span4">Unsubscribe</th>
             </tr>
             </thead>
             <tbody>
             {% for group in subscriptions %}
-                <tr id={{group.meetup_id}}>
-                    <td>{{ loop.index }}</td>
-                    <td> {{ group.name }}</td>
-                    <td>
-                        <a href=# role="button" id="unsubscribe"><i class="icon-remove" id="unsubscribe"></i></a>
-                    </td>
-                </tr>
+              <tr id={{group.meetup_id}}>
+                <td> {{ group.name }}</td>
+                <td>
+                  <a href=# role="button" id="unsubscribe"><i class="icon-remove" id="unsubscribe"></i></a>
+                </td>
+              </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
-{% endif %}
+  {% endif %}
