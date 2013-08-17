@@ -32,3 +32,9 @@ function createAutoClosingAlert(selector, delay) {
                 });
 }
 createAutoClosingAlert($('#flash').parent(), 2000);
+
+// Info Tooltip for error messages
+$(document).ready(function () {
+    $('#error-msg').popover({trigger: "hover",
+    html: true});
+});

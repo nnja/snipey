@@ -55,7 +55,7 @@ class Snipe(ReprMixin, db.Model):
 
     event = db.relationship('Event')
     status = db.Column(db.Integer, default=SCHEDULED)
-
+    error_msg = db.Column(db.String(200))
 
 class Group(ReprMixin, db.Model):
     __tablename__ = 'group'
@@ -99,7 +99,7 @@ class Event(ReprMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    meetup_id = db.Column(db.Integer, index=True, unique=True)
+    meetup_id = db.Column(db.String(200), index=True)
 
     name = db.Column(db.String(200))
     url = db.Column(db.String(200))

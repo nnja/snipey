@@ -62,5 +62,7 @@ def rsvp(snipe_id, meetup_event_id, token):
     else:
         current_app.logger.error('rsvping snipe_id: %s FAILED.' % snipe.id)
         snipe.status = Snipe.FAILED
+        if 'details' in resp:
+            snipe.error_msg = resp['details']
 
     db.session.commit()
