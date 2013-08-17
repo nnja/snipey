@@ -91,7 +91,7 @@ def index():
 
 @app.route('/about')
 def about():
-    return 'about'
+    return render_template("about.html")
 
 
 class SubscriptionForm(Form):
@@ -117,14 +117,7 @@ def subscribe():
             controller.subcribe_to_groups(g.user, selected_groups)
             flash('You subscribed to %s groups'
                   % len(selected_groups), 'alert-success')
-
-            snipes = g.user.snipes
-            subscriptions = g.user.subscriptions
             return redirect(url_for('snipes'))
-            # return redirect(
-            #     'snipes.html', snipes=snipes, subscriptions=subscriptions)
-
-            #return snipes()
 
     return render_template('subscribe.html', form=form)
 

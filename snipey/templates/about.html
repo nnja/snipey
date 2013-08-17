@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="container">
+        <div class="well">
+            <h3>About Snipey!</h3>
+	    <p>
+	      Snipey is built with Python, using these frameworks-
+	    </p>
+	    <ul>
+                <li><a href="http://flask.pocoo.org/">flask</a></li>
+                <li><a href="https://github.com/mbr/flask-bootstrap">flask-bootstrap</a></li>
+                <li><a href="http://www.sqlalchemy.org/">SqlAlchemy</a></li>
+		<li><a href="http://www.celeryproject.org/">Celery</a></li>
+            </ul>
+	    <p>
+	      The message broker behind the scenes is <a href="http://www.rabbitmq.com/">RabbitMQ</a>.
+	      The database being used is <a href="http://www.postgresql.org/">PostgreSQL</a>.
+	    </p>
+            <p>
+                See the source code on <a href="https://github.com/nnja/snipey">github</a>.
+            </p>
+
+	    <h3>About me</h3>
+	    <p>
+	      <img src="{{ url_for('static', filename='img/nina.jpg') }}">
+	      </p>
+            <p>
+                I'm Nina, and I'm in the Summer 2013 batch of <a
+                    href="https://www.hackerschool.com/">hacker school</a>.
+            </p>
+	    <p>
+	      I've been programming professionally for 7 years, mostly in Java, Python, C and C++.
+	    </p>
+	    <p>
+	      I blog <a href="http://nnjas.net">here</a> and tweet <a href="https://twitter.com/nnja">here</a>.
+	    </p>
+
+        </div>
+    </div>
+
+{% endblock %}
