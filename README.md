@@ -2,6 +2,10 @@ Snipey
 =====================
 Snipey is an application that can be used to automatically RSVP to specific Meetup groups. It supports oauth authentication with Meetup.com, so any Meetup member can use it.
 
+Link
+-----------
+I'm in the process of deploying Snipey. Please check back later in the week for the link.
+
 
 Current Functionality
 -----------
