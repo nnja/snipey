@@ -13,14 +13,14 @@ Snipey supports both events that are open immediately, and events that have an R
 
 #### Add Subscriptions
 
-![Add Subscriptions](/snipey/snipey/static/img/screenshot/add_sub.png)
+![Add Subscriptions](https://raw.github.com/nnja/snipey/master/snipey/static/img/screenshot/add_sub.png)
 
 #### View & Remove Subscriptions
-![View & Remove Subscriptions](snipey/snipey/static/img/screenshot/view_subs.png)
+![View & Remove Subscriptions](https://raw.github.com/nnja/snipey/master/snipey/static/img/screenshot/view_subs.png)
 
 
 #### View pending, completed, and canceled snipes.
-![View Snipes](snipey/snipey/static/img/screenshot/view_snipes.png)
+![View Snipes](https://raw.github.com/nnja/snipey/master/snipey/static/img/screenshot/view_snipes.png)
 
 
 Limitations
