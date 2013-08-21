@@ -10,7 +10,7 @@
 </p>
 {% if snipes %}
     <div class="well well-small">
-        <table class="table">
+        <table class="table" id="snipes-table">
             <thead>
             <tr>
                 <th class="span2">Status</th>
@@ -20,7 +20,7 @@
             </thead>
             <tbody>
             {% for snipe in snipes %}
-                <tr>
+                <tr data-group-id="{{snipe.event.group.meetup_id}}">
                   {% if snipe.status == 0 %}
                   <td><span class="alert alert-info snipe-status-alert"> Scheduled </span></td>
 		  {% endif %}
@@ -29,10 +29,11 @@
 		  {% endif %}
 		  {% if snipe.status == 2 %}
                   <td>
-		    {% if snipe.error_msg %}
 		    <span class="alert alert-error snipe-status-alert">Failed</span>
-		  <a rel="tooltip" data-trigger="hover" id="error-msg" data-content="<div><p class='muted'>{{ snipe.error_msg }}</p></div>"><i class="icon icon-info-sign" ></i></a> 
-		    {% endif %}
+		    {% if snipe.error_msg %}
+		  <a rel="tooltip" data-trigger="hover" id="error-msg" data-content="<div><p class='muted'>{{ snipe.error_msg }}</p></div>">
+		    <i class="icon icon-info-sign" ></i></a> 
+		  {% endif %}
 		  </td>
 		  {% endif %}
 		  {% if snipe.status == 3 %}

@@ -1,8 +1,8 @@
 // A janky function that deletes subscriptions via ajax
 ;$(function() {
     var do_delete = function(e) {
-	var row = $(this).parent().parent()
-        var id = row.attr('id')
+	var row = $(this).parent().parent();
+        var id = row.attr('id');
 
         $.ajax({
             type: 'DELETE',
@@ -17,20 +17,19 @@
                         $('#subtable').parent().text('You have no active subscriptions.')
                     }
                 });
-            }
+		$("tr[data-group-id='" + id + "'] .alert-info").removeClass("alert-info").addClass("alert-warning").text("Canceled");
+	    }
         }); 
 	
     };
 
-    $('a#unsubscribe').bind('click', do_delete);
+    $('#unsubscribe').bind('click', do_delete);
   });
 
 // Auto close the flash alert after a few seconds
 function createAutoClosingAlert(selector, delay) {
-   selector.fadeOut(delay,function() {
-                    selector.remove();
-                });
-}
+   selector.slideUp(delay);
+};
 createAutoClosingAlert($('#flash').parent(), 2000);
 
 // Info Tooltip for error messages
