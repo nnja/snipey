@@ -29,6 +29,10 @@ ul#groups {
     margin: 0 0 10px 10px;
 }
 
+.alert.snipe-status-alert {
+    padding: 5px;
+    font-size: 12px;
+}
 
 /* Sticky footer styles
  -------------------------------------------------- */

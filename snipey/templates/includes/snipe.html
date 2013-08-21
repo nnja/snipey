@@ -22,23 +22,21 @@
             {% for snipe in snipes %}
                 <tr>
                   {% if snipe.status == 0 %}
-                  <td><a class="btn btn-warning btn-mini"> Scheduled </a></td>
+                  <td><span class="alert alert-info snipe-status-alert"> Scheduled </span></td>
 		  {% endif %}
 		  {% if snipe.status == 1 %}
-                  <td><a class="btn btn-success btn-mini"> Succeded </a></td>
+                  <td><span class="alert alert-success snipe-status-alert"> Succeded </span></td>
 		  {% endif %}
 		  {% if snipe.status == 2 %}
                   <td>
 		    {% if snipe.error_msg %}
-		    <a id="error-msg" class="btn btn-danger btn-mini" rel="tooltip"
-                    data-trigger="hover"
-                       data-content="<div><p class='muted'>{{ snipe.error_msg }}</p></div>"
-                       ><i class="icon-white icon-info-sign"></i> Failed</a>
+		    <span class="alert alert-error snipe-status-alert">Failed</span>
+		  <a rel="tooltip" data-trigger="hover" id="error-msg" data-content="<div><p class='muted'>{{ snipe.error_msg }}</p></div>"><i class="icon icon-info-sign" ></i></a> 
 		    {% endif %}
 		  </td>
 		  {% endif %}
 		  {% if snipe.status == 3 %}
-                  <td><a class="btn btn-mini"> Canceled </a></td>
+                  <td><span class="alert alert-warning snipe-status-alert"> Canceled </span></td>
                   {% endif %}
                   <td>{{ snipe.event.group.name }}</td>
                   <td><a href="{{ snipe.event.url }}" target="_blank">{{ snipe.event.name }}</a></td>
