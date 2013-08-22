@@ -43,9 +43,8 @@ def process_stream(request):
     If the connection is lost, proceed to reconnect, providing
     the mtime of lost connection.
 
-    TODO: This whole unit of work should be done as a celery task.
-
-    TODO: Event with a status of cancled should not be scheduled for snipe.
+    TODO: In case of heavy load, this whole unit of work could be done
+    as a celery task.
 
     """
     logging.info('processing stream.')

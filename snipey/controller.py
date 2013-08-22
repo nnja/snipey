@@ -72,12 +72,12 @@ def subcribe_to_groups(user, meetup_ids):
 
 def get_group_list(user):
     """
-    Get a list tuples composed of (meetup_id, group name) for every
+    Get a list of pair (meetup_id, group name) for every
     Meetup group that a User belongs to.
     """
     if user is None:
         return []
 
     results = meetup.fetch_user_groups(user.meetup_id)['results']
-    return ([(result['id'], result['name']) for result in results
-             if result['visibility'] == 'public'])
+    return [(result['id'], result['name']) for result in results
+            if result['visibility'] == 'public']
