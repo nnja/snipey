@@ -5,6 +5,10 @@ from sqlalchemy.orm.exc import NoResultFound
 class ReprMixin(object):
     """Hooks into SQLAlchemy's magic to make :meth:`__repr__`s.
     Source from: http://innuendopoly.org/arch/sqlalchemy-init-repr
+
+    Any class that uses this mixin will have reprs in this format:
+    Class(<col name>=<col value>,..)
+    For all columns
     """
     def __repr__(self):
         def reprs():
@@ -71,16 +75,8 @@ class Group(ReprMixin, db.Model):
         """ Return a list of public groups represented by the provided JSON.
         TODO: Might need timezone, but should be ok to default to Eastern.
         """
-        groups = []
-        results = data['results']
-        for result in results:
-            meetup_id = result['id']
-            name = result['name']
-
-            group = cls(meetup_id=meetup_id, name=name)
-            groups.append(group)
-
-        return groups
+        return [cls(meetup_id=r['id'], name=r['name'])
+                for r in data['results']]
 
     @classmethod
     def store_groups(cls, groups):
