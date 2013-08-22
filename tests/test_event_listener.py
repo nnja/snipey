@@ -35,9 +35,9 @@ class EventStreamTestCase(SnipeyTestCase):
     #     self.assertTrue(event.name)
 
     def test_create_snipe_for_one_user(self):
-        user_id = 48598382
-        event_id = 124211852
-        meetup_group_id = 8230562
+        user_id = '48598382'
+        event_id = '124211852'
+        meetup_group_id = '8230562'
 
         event_url = ('http://www.meetup.com/hackerschool-friends/events/%s/'
                      % event_id)
@@ -91,8 +91,8 @@ class EventStreamTestCase(SnipeyTestCase):
         user_id = 48598382
 
         # event id where rsvps open in august 2014.
-        event_id = 133402822
-        meetup_group_id = 4064512
+        event_id = '133402822'
+        meetup_group_id = '4064512'
         event_url = 'http://www.meetup.com/ninjas/events/%s/' % event_id
 
         user = User(meetup_id=user_id)
