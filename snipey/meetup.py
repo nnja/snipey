@@ -36,10 +36,7 @@ def fetch_groups(meetup_ids):
 
     The api will return a list of results, even if only one ID is passed in.
     """
-    if not isinstance(meetup_ids, list):
-        ids = meetup_ids
-    else:
-        ids = ','.join([str(m_id) for m_id in meetup_ids])
+    ids = ','.join(map(str, meetup_ids))
 
     params = {
         'key': config.MEETUP_API_KEY,

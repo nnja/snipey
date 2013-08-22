@@ -23,7 +23,7 @@
 	
     };
 
-    $('#unsubscribe').bind('click', do_delete);
+    $('.unsubscribe').bind('click', do_delete);
   });
 
 // Auto close the flash alert after a few seconds
