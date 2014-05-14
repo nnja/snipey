@@ -57,7 +57,9 @@ Installation Instructions
 4. start rabbitmq `rabbitmq-server -detached`
 5. start celery locally `celery worker --app=snipey.tasks -l debug`
 6. update the settings.py with your Meetup API Keys and database URL 
-7. start the web app and background worker `python web.py`
+7. prime the database. open a python shell within your virtual env and enter:
+	`from snipey import db; db.create_all()`
+8. start the web app and background worker `python web.py`
 
 Support
 -------
