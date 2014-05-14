@@ -56,7 +56,8 @@ Installation Instructions
 3. Create the environment variables specified in `config.py`
 4. start rabbitmq `rabbitmq-server -detached`
 5. start celery locally `celery worker --app=snipey.tasks -l debug`
-6. start the web app and background worker `python web.py`
+6. update the settings.py with your Meetup API Keys and database URL 
+7. start the web app and background worker `python web.py`
 
 Support
 -------
